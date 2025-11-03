@@ -2,7 +2,7 @@ TARGET = toyforth
 SRC = main.c memory.c tfobj.c stack.c
 CC = gcc
 
-CFLAGS = -O3 -Wall -Wextra
+CFLAGS = -Wall -Wextra
 
 all: $(TARGET)
 

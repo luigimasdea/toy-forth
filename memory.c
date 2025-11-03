@@ -14,6 +14,11 @@ void *xmalloc(size_t size) {
 }
 
 void *xrealloc(void *p, size_t size) {
+  if (size == 0) {
+    free(p);
+    return NULL;
+  }
+
   void *new_p = realloc(p, size);
   if (new_p == NULL) {
     fprintf(stderr, "Bad memory reallocation");
@@ -24,6 +29,11 @@ void *xrealloc(void *p, size_t size) {
 }
 
 void *xreallocarray(void *p, size_t n, size_t size) {
+  if (size == 0 || n == 0) {
+    free(p);
+    return NULL;
+  }
+
   void *new_p= reallocarray(p, n, size);
   if (new_p== NULL) {
     fprintf(stderr, "Bad memory reallocation");

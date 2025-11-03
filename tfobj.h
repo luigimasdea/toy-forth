@@ -7,8 +7,9 @@ enum TFOBJ_TYPE {
   TFOBJ_TYPE_INT = 0,
   TFOBJ_TYPE_BOOL = 1,
   TFOBJ_TYPE_STRING = 2,
-  TFOBJ_TYPE_LIST = 3,
-  TFOBJ_TYPE_SYMBOL = 4,
+  TFOBJ_TYPE_SYMBOL = 3,
+  TFOBJ_TYPE_LIST = 4,
+  TFOBJ_TYPE_STACK = 5,
 };
 
 typedef struct tfobj {
@@ -22,16 +23,22 @@ typedef struct tfobj {
     } str;
 
     struct {
-      struct tfobj **list_ptr;
+      struct tfobj **elem;
       size_t len;
     } list;
   };
 } tfobj;
 
 tfobj *create_object(int type);
+
 tfobj *create_int_object(int i);
 tfobj *create_bool_object(int i);
-tfobj *create_bool_object(int i);
+tfobj *create_string_object(char *str_ptr, size_t len);
+tfobj *create_symbol_object(char *str_ptr, size_t len);
 tfobj *create_list_object(void);
+tfobj *create_stack_object(void);
+
+void tfobj_retain(tfobj *obj);
+void tfobj_release(tfobj *obj);
 
 #endif // !TFOBJ_H

@@ -10,29 +10,30 @@
 * 'stack' parameter type is 'LIST', then it reallocates the list and push the element.
 * Finally, it increases the element's ref_count
 */
-void tf_stack_push(tfobj *stack, tfobj *elem) {
-  if (stack->type != TFOBJ_TYPE_LIST) {
-    fprintf(stderr, "Pushed to a non-list tfobject");
+void stack_push(tfobj *stack, tfobj *elem) {
+  if (stack->type != TFOBJ_TYPE_STACK) {
+    fprintf(stderr, "Pushed to a non-stack tfobject");
     exit(EXIT_FAILURE);
   }
 
   size_t new_len = stack->list.len + 1;
 
-  stack->list.list_ptr = (tfobj**) xreallocarray(stack->list.list_ptr, new_len, sizeof(tfobj));
+  stack->list.elem = (tfobj **) xreallocarray(stack->list.elem, new_len, sizeof(tfobj *));
 
-  stack->list.list_ptr[stack->list.len] = elem;
+  stack->list.elem[stack->list.len] = elem;
   stack->list.len = new_len;
 
-  elem->ref_count++;
+  tfobj_retain(elem);
 }
 
 /*
  * This function check if stack is 'LIST', then checks if stack is not empty,
  * finally pops and returns the element on top 
+ * IMPORTANT: If the return object is acquired, you need to retain it.
  */
-tfobj *tf_stack_pop(tfobj *stack) {
-  if (stack->type != TFOBJ_TYPE_LIST) {
-    fprintf(stderr, "Popped from a non-list tfobject");
+tfobj *stack_pop(tfobj *stack) {
+  if (stack->type != TFOBJ_TYPE_STACK) {
+    fprintf(stderr, "Popped from a non-stack tfobject");
     exit(EXIT_FAILURE);
   }
 
@@ -43,18 +44,14 @@ tfobj *tf_stack_pop(tfobj *stack) {
 
   size_t new_len = stack->list.len - 1;
   
-  tfobj *pop_obj = stack->list.list_ptr[new_len];
+  tfobj *pop_obj = stack->list.elem[new_len];
 
-  if (new_len > 0) {
-    stack->list.list_ptr = (tfobj**) xreallocarray(stack->list.list_ptr, new_len, sizeof(tfobj));
-  } else {
-    free(stack->list.list_ptr); 
-    stack->list.list_ptr = NULL;
-  }
+  /* If 'new_len' == 0, xreallocarray becomes a free call (maybe there are portabilty issues) */
+  stack->list.elem = (tfobj **) xreallocarray(stack->list.elem, new_len, sizeof(tfobj *));
 
   stack->list.len = new_len;
 
-  pop_obj->ref_count--;
+  tfobj_release(pop_obj);
 
   return pop_obj;
 }
