@@ -8,8 +8,12 @@
 #include "tfobj.h"
 
 void list_push_front(tfobj *list, tfobj *elem) {
-  if (list == NULL || list->type != TFOBJ_TYPE_LIST) {
+  if (list->type != TFOBJ_TYPE_LIST) {
     fprintf(stderr, "Argoument is a non-list tfobject\n");
+    exit(EXIT_FAILURE);
+  }
+  if (list == NULL || elem == NULL) {
+    fprintf(stderr, "One of all of the argouments are NULL\n");
     exit(EXIT_FAILURE);
   }
 

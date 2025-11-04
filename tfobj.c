@@ -1,6 +1,7 @@
 #include "tfobj.h"
 
 #include "memory.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -23,7 +24,7 @@ tfobj *create_bool_object(int val) {
   tfobj *obj = create_object(TFOBJ_TYPE_BOOL);
 
   if (val != 0 && val != 1) {
-    fprintf(stderr, "Error: bool object value must be 0 or 1");
+    fprintf(stderr, "Error: bool object value must be 0 or 1\n");
   }
   obj->val = val;
 

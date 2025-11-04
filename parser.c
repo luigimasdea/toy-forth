@@ -1,48 +1,84 @@
 #include "parser.h"
 
+#include <ctype.h>
+#include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 
 #include "list.h"
-#include "tfobj.h"
 
-#define WHITESPACE_DELIMITERS " \t\n"
-
-char *normalize(char *str) {
-
+void skip_spaces(tfparser *parser) {
+  while (isspace(parser->p[0])) {
+    parser->p++;
+  }
 }
 
-tfobj *parse(const char *tok) {
-  if (strcmp(tok, "0") == 0) {
-    return create_int_object(0);
-  } 
+tfobj *parse_int(tfparser *parser) {
+  int num;
+  char token[MAX_INT_LEN];
 
-  int i = atoi(tok);
-  if (i != 0) {
-    return create_int_object(i);
+  /* Saving the start of the number */
+  char *start = parser->p;
+
+  /* Check if it is a negative number or an error, then skip the '-' */
+  if (parser->p[0] == '-') {
+    if (!isdigit(parser->p[1])) {
+      return NULL;
+    }
+    parser->p[0]++;
   }
 
-  if (strcmp(tok, "true") == 0) {
-    return create_bool_object(1);
-  }
-  else if (strcmp(tok, "false") == 0) {
-    return create_bool_object(0);
+  /* Now skip to the end of the token */
+  while (!isspace(parser->p[0]) && parser->p[0] != '\0') {
+    parser->p++;
   }
 
-  return NULL;
+  short numlen = parser->p - start;
+  if (numlen >= MAX_INT_LEN) {
+    fprintf(stderr, "Number too big\n");
+    return NULL;
+  }
+
+  memcpy(token, start, numlen);
+  token[numlen] = '\0';
+  num = atoi(token);
+
+  return create_int_object(num);
 }
 
-tfobj *tokenize(char *buf) {
-  tfobj *tokens = create_list_object();
+tfobj *compile(char *prg) {
+  tfparser parser;
+  parser.prg = prg;
+  parser.p = prg;
 
-  const char *delimiters = " ";
+  tfobj *obj;
+  tfobj *parsed_list = create_list_object();
 
-  char *tok = strtok(buf, delimiters);
+  while (parser.p) {
+    /* 
+     * First skip spaces with isspace().
+     * If is '-', check if next is digit.
+     * Check if is digit.
+     */
+    char *token_start = parser.p;
+    skip_spaces(&parser);
 
-  while (tok != NULL) {
-    list_push_back(tokens, parse(tok));
-    tok = strtok(NULL, delimiters);
+    if (parser.p[0] == '\0') {
+      break;  /* EOF */
+    }
+
+    if (isdigit(parser.p[0]) || parser.p[0] == '-') {
+      obj = parse_int(&parser);
+    } else {
+      obj = NULL;
+    }
+
+    if (obj == NULL) {
+      fprintf(stderr, "Syntax error near: %32s ...\n", token_start);
+      return NULL;
+    }
+
+    list_push_back(parsed_list, obj);
   }
 
-  return tokens;
+  return parsed_list;
 }
