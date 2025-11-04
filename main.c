@@ -5,6 +5,7 @@
 #include "stack.h"
 #include "tfobj.h"
 #include "parser.h"
+#include "exec.h"
 
 #define CHARS_READ_PER_LINE 129  // 129 bytes + 1 to store '\0'
 
@@ -16,7 +17,7 @@ int main(void) {
   First of all, I need an enum */
 
   /* First, I'm gonna develop an interpreter */
-  // tfobj *tfstack = create_stack_object();
+  tfobj *tfstack = create_stack_object();
 
   char buf[CHARS_READ_PER_LINE];
   tfobj *tokens_list;
@@ -31,7 +32,8 @@ int main(void) {
 
     tokens_list = compile(buf);
     if (tokens_list == NULL) break;
-    list_print(tokens_list);
+    exec(tfstack, tokens_list);
+    list_print(tfstack);
   }
   return 0;
 }
