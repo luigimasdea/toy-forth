@@ -29,6 +29,9 @@ tfobj *parse_int(tfparser *parser) {
 
   /* Now skip to the end of the token */
   while (!isspace(parser->p[0]) && parser->p[0] != '\0') {
+    if (!isdigit(parser->p[0])) {
+      return NULL;
+    }
     parser->p++;
   }
 
@@ -54,11 +57,6 @@ tfobj *compile(char *prg) {
   tfobj *parsed_list = create_list_object();
 
   while (parser.p) {
-    /* 
-     * First skip spaces with isspace().
-     * If is '-', check if next is digit.
-     * Check if is digit.
-     */
     char *token_start = parser.p;
     skip_spaces(&parser);
 
@@ -66,14 +64,16 @@ tfobj *compile(char *prg) {
       break;  /* EOF */
     }
 
+    /* Parsing different types */
     if (isdigit(parser.p[0]) || parser.p[0] == '-') {
       obj = parse_int(&parser);
-    } else {
+    }
+    else {
       obj = NULL;
     }
 
     if (obj == NULL) {
-      fprintf(stderr, "Syntax error near: %32s ...\n", token_start);
+      fprintf(stderr, "Syntax error at: %s\n", token_start);
       return NULL;
     }
 

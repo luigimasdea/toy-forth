@@ -30,6 +30,7 @@ int main(void) {
     }
 
     tokens_list = compile(buf);
+    if (tokens_list == NULL) break;
     list_print(tokens_list);
   }
   return 0;
