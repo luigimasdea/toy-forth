@@ -13,6 +13,13 @@
 
 #include "tfobj.h"
 
+typedef struct tfparser {
+  char *prg;  /* The program to compile into a list */
+  char *p;  /* Next token to parse */
+} tfparser;
+
+char *normalize(char *str);
+tfobj *parse(const char *tok);
 tfobj *tokenize(char *buf);
 
 #endif // !PARSER_H

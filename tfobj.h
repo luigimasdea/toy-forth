@@ -16,7 +16,8 @@ typedef struct tfobj {
   int ref_count;
   int type;  // TFOBJ_TYPE_*
   union {
-    int i;
+    int val;
+
     struct {
       char *str_ptr;
       size_t len;
@@ -31,8 +32,8 @@ typedef struct tfobj {
 
 tfobj *create_object(int type);
 
-tfobj *create_int_object(int i);
-tfobj *create_bool_object(int i);
+tfobj *create_int_object(int val);
+tfobj *create_bool_object(int val);
 tfobj *create_string_object(char *str_ptr, size_t len);
 tfobj *create_symbol_object(char *str_ptr, size_t len);
 tfobj *create_list_object(void);
@@ -40,5 +41,7 @@ tfobj *create_stack_object(void);
 
 void tfobj_retain(tfobj *obj);
 void tfobj_release(tfobj *obj);
+
+void tfobj_print(tfobj *obj);
 
 #endif // !TFOBJ_H

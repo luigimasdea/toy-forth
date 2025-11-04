@@ -1,6 +1,7 @@
 #include "tfobj.h"
 
 #include "memory.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 tfobj *create_object(int type) {
@@ -11,16 +12,20 @@ tfobj *create_object(int type) {
   return obj;
 }
 
-tfobj *create_int_object(int i) {
+tfobj *create_int_object(int val) {
   tfobj *obj = create_object(TFOBJ_TYPE_INT);
-  obj->i = i;
+  obj->val = val;
 
   return obj;
 }
 
-tfobj *create_bool_object(int i) {
+tfobj *create_bool_object(int val) {
   tfobj *obj = create_object(TFOBJ_TYPE_BOOL);
-  obj->i = i;
+
+  if (val != 0 && val != 1) {
+    fprintf(stderr, "Error: bool object value must be 0 or 1");
+  }
+  obj->val = val;
 
   return obj;
 }
@@ -64,5 +69,31 @@ void tfobj_release(tfobj *obj) {
 
   if (obj->ref_count <= 0) {
     free(obj);
+  }
+}
+
+void tfobj_print(tfobj *obj) {
+  if (obj == NULL) {
+    printf("[NULL]");
+    return;
+  }
+
+  switch (obj->type) {
+    case TFOBJ_TYPE_INT:
+      printf("%d", obj->val);
+      break;
+
+    case TFOBJ_TYPE_BOOL:
+      if (obj->val == 0) {
+        printf("TRUE");
+      } else {
+        printf("FALSE");
+      }
+      break;
+
+    default:
+      fprintf(stderr, "Print of other types is not yet implemented\n");
+      exit(EXIT_FAILURE);
+      break;
   }
 }

@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "list.h"
 #include "stack.h"
 #include "tfobj.h"
+#include "parser.h"
 
 #define CHARS_READ_PER_LINE 33  // 32 bytes + 1 to store '\0'
 
@@ -27,6 +29,10 @@ int main(void) {
     }
 
     // stack_push(tfstack, )
+    tfobj *line_list = create_list_object();
+    tfobj *list = tokenize(buf);
+
+    list_print(list);
   }
   return 0;
 }
