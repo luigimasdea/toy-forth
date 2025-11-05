@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "list.h"
+#include "symbol.h"
 
 void skip_spaces(tfparser *parser) {
   while (isspace(parser->p[0])) {
@@ -48,6 +49,33 @@ tfobj *parse_int(tfparser *parser) {
   return create_int_object(num);
 }
 
+tfobj *parse_string(tfparser *parser) {
+  char token[11];
+
+  /* Saving the start of the string */
+  char *start = parser->p;
+
+  /* Now skip to the end of the token */
+  while (!isspace(parser->p[0]) && parser->p[0] != '\0') {
+    parser->p++;
+  }
+
+  short strlen = parser->p - start;
+  if (strlen >= 10) {
+    fprintf(stderr, "String too big\n");
+    return NULL;
+  }
+
+  memcpy(token, start, strlen);
+  token[strlen] = '\0';
+
+  if (!issymbol(token)) {
+    return NULL;
+  }
+
+  return create_symbol_object(token, strlen);
+}
+
 tfobj *compile(char *prg) {
   tfparser parser;
   parser.prg = prg;
@@ -69,7 +97,7 @@ tfobj *compile(char *prg) {
       obj = parse_int(&parser);
     }
     else {
-      obj = NULL;
+      obj = parse_string(&parser);
     }
 
     if (obj == NULL) {

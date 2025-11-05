@@ -13,6 +13,10 @@ void exec(tfobj *stack, tfobj *list) {
         stack_push(stack, el);
         break;
 
+      case TFOBJ_TYPE_SYMBOL:
+        /* Call the function relative to symbol */
+        break;
+
       default:
         break;
     }
