@@ -14,7 +14,7 @@ void skip_spaces(tfparser *parser) {
 }
 
 tfobj *parse_string(tfparser *parser) {
-  char token[11];
+  char token[MAX_PRIM_LEN + 1];  /* +1 because of \0 */
 
   /* Saving the start of the string */
   char *start = parser->p;
@@ -25,7 +25,7 @@ tfobj *parse_string(tfparser *parser) {
   }
 
   short strlen = parser->p - start;
-  if (strlen >= 10) {
+  if (strlen >= MAX_PRIM_LEN) {
     fprintf(stderr, "String too big\n");
     return NULL;
   }
@@ -42,7 +42,6 @@ tfobj *parse_string(tfparser *parser) {
 }
 
 tfobj *parse_int(tfparser *parser) {
-  int is_negative = 0;
   int num;
   char token[MAX_INT_LEN];
 
@@ -55,7 +54,6 @@ tfobj *parse_int(tfparser *parser) {
       tfobj *obj = parse_string(parser);
       return obj;
     }
-    is_negative = 1;
     parser->p++;
   }
 
@@ -76,10 +74,6 @@ tfobj *parse_int(tfparser *parser) {
   memcpy(token, start, numlen);
   token[numlen] = '\0';
   num = atoi(token);
-
-  if (is_negative) {
-    num *= -1;
-  }
 
   return create_int_object(num);
 }

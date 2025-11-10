@@ -3,6 +3,7 @@
 
 #include "tfobj.h"
 
+#define MAX_PRIM_LEN 10
 #define MAX_INT_LEN 128
 
 typedef struct tfparser {

@@ -17,6 +17,8 @@ int tfadd(tfobj *stack) {
   tfobj *a = stack_pop(stack);
 
   if (a->type != TFOBJ_TYPE_INT || b->type != TFOBJ_TYPE_INT) {
+    stack_push(stack, a);
+    stack_push(stack, b);
     fprintf(stderr, "TYPE MISMATCH: '+' works only with integers\n");
     return -1;
   }
