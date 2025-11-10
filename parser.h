@@ -11,6 +11,7 @@ typedef struct tfparser {
 } tfparser;
 
 void skip_spaces(tfparser *parser);
+tfobj *parse_string(tfparser *parser);
 tfobj *parse_int(tfparser *parser);
 tfobj *compile(char *prg);
 

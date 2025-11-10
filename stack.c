@@ -59,3 +59,21 @@ tfobj *stack_pop(tfobj *stack) {
 
   return elem;
 }
+
+tfobj *stack_peek(tfobj *stack) {
+  if (stack == NULL) {
+    fprintf(stderr, "Argoument 'stack' is NULL\n");
+    exit(EXIT_FAILURE);
+  }
+  if (stack->type != TFOBJ_TYPE_STACK) {
+    fprintf(stderr, "Peeked from a non-stack tfobject\n");
+    exit(EXIT_FAILURE);
+  }
+
+  if (stack->list.len <= 0) {
+    fprintf(stderr, "Peeked from an empty stack\n");
+    exit(EXIT_FAILURE);
+  }
+
+  return stack->list.elem[stack->list.len - 1];
+}

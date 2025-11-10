@@ -12,7 +12,12 @@ enum TFOBJ_TYPE {
   TFOBJ_TYPE_STACK = 5,
 };
 
-typedef struct tfobj {
+struct tfobj;
+typedef struct tfobj tfobj;
+
+typedef int (*tfprim)(tfobj *stack);
+
+struct tfobj {
   int ref_count;
   int type;  // TFOBJ_TYPE_*
   union {
@@ -27,15 +32,17 @@ typedef struct tfobj {
       struct tfobj **elem;
       size_t len;
     } list;
+
+    tfprim prim_ptr;
   };
-} tfobj;
+};
 
 tfobj *create_object(int type);
 
 tfobj *create_int_object(int val);
 tfobj *create_bool_object(int val);
 tfobj *create_string_object(char *str_ptr, size_t len);
-tfobj *create_symbol_object(char *str_ptr, size_t len);
+tfobj *create_symbol_object(tfprim prim);
 tfobj *create_list_object(void);
 tfobj *create_stack_object(void);
 

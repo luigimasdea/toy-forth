@@ -1,5 +1,5 @@
 TARGET = toyforth
-SRC = main.c memory.c tfobj.c list.c stack.c parser.c exec.c
+SRC = main.c memory.c tfobj.c list.c stack.c parser.c exec.c primitives.c symbol.c
 CC = gcc
 
 CFLAGS = -Wall -Wextra

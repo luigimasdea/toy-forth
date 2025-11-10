@@ -28,7 +28,13 @@ int main(void) {
     tokens_list = compile(buf);
     if (tokens_list == NULL) break;
     exec(tfstack, tokens_list);
+
     list_print(tfstack);
+
+    tfobj_release(tokens_list);
   }
+
+  tfobj_release(tfstack);
+
   return 0;
 }

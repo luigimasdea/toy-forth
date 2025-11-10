@@ -14,7 +14,7 @@ void exec(tfobj *stack, tfobj *list) {
         break;
 
       case TFOBJ_TYPE_SYMBOL:
-        /* Call the function relative to symbol */
+        el->prim_ptr(stack);
         break;
 
       default:

@@ -1,9 +1,9 @@
 #include "tfobj.h"
 
-#include "memory.h"
-
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "memory.h"
 
 tfobj *create_object(int type) {
   tfobj *obj = (tfobj*) xmalloc(sizeof(tfobj));
@@ -39,9 +39,9 @@ tfobj *create_string_object(char *str_ptr, size_t len) {
   return obj;
 }
 
-tfobj *create_symbol_object(char *str_ptr, size_t len) {
-  tfobj *obj = create_string_object(str_ptr, len);
-  obj->type = TFOBJ_TYPE_SYMBOL;
+tfobj *create_symbol_object(tfprim prim) {
+  tfobj *obj = create_object(TFOBJ_TYPE_SYMBOL);
+  obj->prim_ptr = prim;
 
   return obj;
 }
@@ -62,10 +62,18 @@ tfobj *create_stack_object(void) {
 }
 
 void tfobj_retain(tfobj *obj) {
+  if (obj == NULL) {
+    return;
+  }
+
   obj->ref_count++;
 }
 
 void tfobj_release(tfobj *obj) {
+  if (obj == NULL) {
+    return;
+  }
+
   obj->ref_count--;
 
   if (obj->ref_count <= 0) {
