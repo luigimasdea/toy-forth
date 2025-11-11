@@ -13,8 +13,8 @@ void skip_spaces(tfparser *parser) {
   }
 }
 
-tfobj *parse_string(tfparser *parser) {
-  char token[MAX_PRIM_LEN + 1];  /* +1 because of \0 */
+tfobj *parse_symbol(tfparser *parser) {
+  char token[MAX_SYM_LEN + 1];  /* +1 because of '\0' */
 
   /* Saving the start of the string */
   char *start = parser->p;
@@ -24,14 +24,14 @@ tfobj *parse_string(tfparser *parser) {
     parser->p++;
   }
 
-  short strlen = parser->p - start;
-  if (strlen >= MAX_PRIM_LEN) {
-    fprintf(stderr, "String too big\n");
+  short len = parser->p - start;
+  if (len >= MAX_SYM_LEN) {
+    fprintf(stderr, "Symbol too big\n");
     return NULL;
   }
 
-  memcpy(token, start, strlen);
-  token[strlen] = '\0';
+  memcpy(token, start, len);
+  token[len] = '\0';
 
   tfprim prim = getprim(token);
   if (prim == NULL) {
@@ -48,12 +48,8 @@ tfobj *parse_int(tfparser *parser) {
   /* Saving the start of the number */
   char *start = parser->p;
 
-  /* Check if it is a negative number or an error, then skip the '-' */
+  /* If negative int, skip the '-' sign */
   if (parser->p[0] == '-') {
-    if (!isdigit(parser->p[1])) {
-      tfobj *obj = parse_string(parser);
-      return obj;
-    }
     parser->p++;
   }
 
@@ -95,11 +91,12 @@ tfobj *compile(char *prg) {
     }
 
     /* Parsing different types */
-    if (isdigit(parser.p[0]) || parser.p[0] == '-') {
+    if (isdigit(parser.p[0]) || 
+      (parser.p[0] == '-' && isdigit(parser.p[1]))) {
       obj = parse_int(&parser);
     }
     else {
-      obj = parse_string(&parser);
+      obj = parse_symbol(&parser);
     }
 
     if (obj == NULL) {
