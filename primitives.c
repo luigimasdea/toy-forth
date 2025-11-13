@@ -121,3 +121,22 @@ int tfdup(tfobj *stack) {
 
   return 0;
 }
+
+int tfmod(tfobj *stack) {
+  if (stack->list.len < 2) {
+    fprintf(stderr, "STACK UNDERFLOW: 'MOD' needs at least 2 elements\n");
+    return -1;
+  }
+  
+  tfobj *b = stack_pop(stack);
+  tfobj *a = stack_pop(stack);
+
+  if (a->type != TFOBJ_TYPE_INT || b->type != TFOBJ_TYPE_INT) {
+    fprintf(stderr, "TYPE MISMATCH: 'MOD' works only with integers\n");
+    return -1;
+  }
+  tfobj *obj = create_int_object(a->val % b->val);
+  stack_push(stack, obj);
+
+  return 0;
+}

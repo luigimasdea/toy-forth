@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stddef.h>
 
-#define PRIM_COUNT 6
+#define PRIM_COUNT 7
 
 const tfprim_dictionary_entry primitives[PRIM_COUNT] = {
     {"+", tfadd},
@@ -13,6 +13,7 @@ const tfprim_dictionary_entry primitives[PRIM_COUNT] = {
     {"/", tfdiv},
     {".", tfprint},
     {"DUP", tfdup},
+    {"MOD", tfmod},
 };
 
 char *strupr(char *str) {

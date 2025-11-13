@@ -17,7 +17,7 @@ int main(void) {
   while(1) {
     printf("> ");
     if (fgets(buf, CHARS_READ_PER_LINE, stdin) == NULL) {
-      printf("\nSegnale EOF (Ctrl+D) rilevato. Chiusura interprete.\n");
+      printf("\nEOF signal (Ctrl+D) detected. Exiting program.\n");
       exit(EXIT_SUCCESS); 
     }
 
