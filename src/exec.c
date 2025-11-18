@@ -1,6 +1,6 @@
-#include "exec.h"
+#include "../include/exec.h"
 
-#include "stack.h"
+#include "../include/stack.h"
 
 
 void exec(tfobj *stack, tfobj *list) {

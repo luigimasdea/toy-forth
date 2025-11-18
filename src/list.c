@@ -1,11 +1,11 @@
-#include "list.h"
+#include "../include/list.h"
 
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "memory.h"
-#include "tfobj.h"
+#include "../include/memory.h"
+#include "../include/tfobj.h"
 
 void list_push_front(tfobj *list, tfobj *elem) {
   if (list->type != TFOBJ_TYPE_LIST) {

@@ -1,9 +1,9 @@
-#include "tfobj.h"
+#include "../include/tfobj.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "memory.h"
+#include "../include/memory.h"
 
 tfobj *create_object(int type) {
   tfobj *obj = (tfobj*) xmalloc(sizeof(tfobj));

@@ -1,10 +1,10 @@
-#include "stack.h"
+#include "../include/stack.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "tfobj.h"
-#include "memory.h"
+#include "../include/tfobj.h"
+#include "../include/memory.h"
 
 /*
 * This function tries to push an element to the stack.

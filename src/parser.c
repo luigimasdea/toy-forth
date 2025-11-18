@@ -1,11 +1,11 @@
-#include "parser.h"
+#include "../include/parser.h"
 
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "list.h"
-#include "symbol.h"
+#include "../include/list.h"
+#include "../include/symbol.h"
 
 void skip_spaces(tfparser *parser) {
   while (isspace(parser->p[0])) {
@@ -89,7 +89,7 @@ tfobj *compile(char *prg) {
     if (parser.p[0] == '\0') {
       break;  /* EOF */
     }
-
+    
     /* Parsing different types */
     if (isdigit(parser.p[0]) || 
       (parser.p[0] == '-' && isdigit(parser.p[1]))) {

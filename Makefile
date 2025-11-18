@@ -1,13 +1,15 @@
-TARGET = toyforth
-SRC = main.c memory.c tfobj.c list.c stack.c parser.c exec.c primitives.c symbol.c interpreter.c
 CC = gcc
+TARGET = toyforth
+
+SRC_FILES = memory.c tfobj.c list.c stack.c parser.c exec.c primitives.c symbol.c interpreter.c
+SRC = $(addprefix src/, $(SRC_FILES))
 
 CFLAGS = -Wall -Wextra
 
 all: $(TARGET)
 
 $(TARGET): $(SRC)
-	$(CC) $(CFLAGS) $(SRC) -o $(TARGET)
+	$(CC) $(CFLAGS) main.c $(SRC) -o $(TARGET)
 
 run: $(TARGET)
 	./$(TARGET)

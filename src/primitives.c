@@ -1,9 +1,9 @@
-#include "primitives.h"
+#include "../include/primitives.h"
 
 #include <stdio.h>
 
-#include "stack.h"
-#include "tfobj.h"
+#include "../include/stack.h"
+#include "../include/tfobj.h"
 
 int tfadd(tfobj *stack) {
   if (stack->list.len < 2) {

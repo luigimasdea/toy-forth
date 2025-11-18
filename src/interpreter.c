@@ -1,10 +1,10 @@
-#include "interpreter.h"
+#include "../include/interpreter.h"
 
 #include <stdio.h>
 #include <string.h>
 
-#include "parser.h"
-#include "exec.h"
+#include "../include/parser.h"
+#include "../include/exec.h"
 
 void interpreter(tfobj *stack) {
   char buf[CHARS_READ_PER_LINE];
