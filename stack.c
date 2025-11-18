@@ -53,6 +53,7 @@ tfobj *stack_pop(tfobj *stack) {
   tfobj *elem = stack->list.elem[new_len];
 
   /* If 'new_len' == 0, xreallocarray becomes a free call (maybe there are portabilty issues) */
+  // FIXME
   stack->list.elem = (tfobj **) xreallocarray(stack->list.elem, new_len, sizeof(tfobj *));
 
   stack->list.len = new_len;

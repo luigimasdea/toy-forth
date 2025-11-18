@@ -9,15 +9,12 @@ void exec(tfobj *stack, tfobj *list) {
     tfobj *el = list->list.elem[i];
 
     switch (el->type) {
-      case TFOBJ_TYPE_INT:
-        stack_push(stack, el);
-        break;
-
       case TFOBJ_TYPE_SYMBOL:
         el->prim_ptr(stack);
         break;
 
       default:
+        stack_push(stack, el);
         break;
     }
   }
