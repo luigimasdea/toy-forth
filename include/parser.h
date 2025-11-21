@@ -13,7 +13,6 @@ typedef struct tfparser {
 
 void skip_spaces(tfparser *parser);
 tfobj *parse_int(tfparser *parser);
-tfobj *parse_string(tfparser *parser);
-tfobj *compile(char *prg);
+tfobj *parse_symbol(tfparser *parser);
 
 #endif // !PARSER_H

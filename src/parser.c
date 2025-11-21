@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../include/list.h"
 #include "../include/symbol.h"
 
 void skip_spaces(tfparser *parser) {
@@ -72,40 +71,4 @@ tfobj *parse_symbol(tfparser *parser) {
   }
 
   return create_symbol_object(prim);
-}
-
-tfobj *compile(char *prg) {
-  tfparser parser;
-  parser.prg = prg;
-  parser.p = prg;
-
-  tfobj *obj;
-  tfobj *parsed_list = create_list_object();
-
-  while (parser.p) {
-    char *token_start = parser.p;
-    skip_spaces(&parser);
-
-    if (parser.p[0] == '\0') {
-      break;  /* EOF */
-    }
-    
-    /* Parsing different types */
-    if (isdigit(parser.p[0]) || 
-      (parser.p[0] == '-' && isdigit(parser.p[1]))) {
-      obj = parse_int(&parser);
-    }
-    else {
-      obj = parse_symbol(&parser);
-    }
-
-    if (obj == NULL) {
-      fprintf(stderr, "Syntax error at: %s\n", token_start);
-      return NULL;
-    }
-
-    list_push_back(parsed_list, obj);
-  }
-
-  return parsed_list;
 }

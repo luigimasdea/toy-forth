@@ -89,7 +89,7 @@ void tfobj_print(tfobj *obj) {
 
   switch (obj->type) {
     case TFOBJ_TYPE_INT:
-      printf("%d", obj->val);
+      printf("%d\n", obj->val);
       break;
 
     case TFOBJ_TYPE_BOOL:

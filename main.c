@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "include/exec.h"
 #include "include/tfobj.h"
 #include "include/interpreter.h"
+#include "include/compiler.h"
 
 int main(int argc, char **argv) {
   tfobj *tfstack = create_stack_object();
@@ -11,13 +13,17 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Usage: main <file>");
     exit(EXIT_FAILURE);
   }
-  else if (argc == 2) {
-    /* TODO: compile file */
-  }
-  else {
-    interpreter(tfstack);
+
+  if (argc == 2) {
+    char *prg_text = read_file(argv[1]);
+    tfobj *ls = compile(prg_text);
+    exec(tfstack, ls);
+
+    free(prg_text);
+    tfobj_release(ls);
   }
 
+  interpreter(tfstack);
 
   tfobj_release(tfstack);
 

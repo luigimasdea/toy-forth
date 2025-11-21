@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../include/parser.h"
+#include "../include/compiler.h"
 #include "../include/exec.h"
 
 void interpreter(tfobj *stack) {
@@ -17,15 +17,14 @@ void interpreter(tfobj *stack) {
       exit(EXIT_SUCCESS); 
     }
 
-    if (strncmp(buf, "quit", 4) == 0) {
+    if (strncmp(buf, "quit", 4) == 0
+      || strncmp(buf, "bye", 3) == 0) {
       break;
     }
 
     tokens_list = compile(buf);
     if (tokens_list == NULL) break;
     exec(stack, tokens_list);
-
-    // list_print(stack);
 
     tfobj_release(tokens_list);
   }
