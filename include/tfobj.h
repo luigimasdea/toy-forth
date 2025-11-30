@@ -46,6 +46,7 @@ tfobj *create_symbol_object(tfprim prim);
 tfobj *create_list_object(void);
 tfobj *create_stack_object(void);
 
+void tfobj_free(tfobj *obj);
 void tfobj_retain(tfobj *obj);
 void tfobj_release(tfobj *obj);
 

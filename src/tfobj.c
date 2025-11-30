@@ -1,5 +1,6 @@
 #include "../include/tfobj.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -61,6 +62,26 @@ tfobj *create_stack_object(void) {
   return obj;
 }
 
+void tfobj_free(tfobj *obj) {
+  switch (obj->type) {
+    case TFOBJ_TYPE_LIST:
+    case TFOBJ_TYPE_STACK:
+      for (size_t i = 0; i < obj->list.len; ++i) {
+        tfobj_free(obj->list.elem[i]);
+      }
+      break;
+
+    case TFOBJ_TYPE_STRING:
+      free(obj->str.str_ptr);
+      break;
+
+    default:
+      break;
+
+    free(obj);
+  }
+}
+
 void tfobj_retain(tfobj *obj) {
   if (obj == NULL) {
     return;
@@ -70,14 +91,12 @@ void tfobj_retain(tfobj *obj) {
 }
 
 void tfobj_release(tfobj *obj) {
-  if (obj == NULL) {
-    return;
-  }
+  assert(obj != NULL && obj->ref_count > 0);
 
   obj->ref_count--;
 
-  if (obj->ref_count <= 0) {
-    free(obj);
+  if (obj->ref_count == 0) {
+    tfobj_free(obj);
   }
 }
 
