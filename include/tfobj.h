@@ -24,13 +24,13 @@ struct tfobj {
     int val;
 
     struct {
-      char *str_ptr;
       size_t len;
+      char *str_ptr;
     } str;
 
     struct {
-      struct tfobj **elem;
       size_t len;
+      struct tfobj **elem;
     } list;
 
     tfprim prim_ptr;
