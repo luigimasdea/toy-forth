@@ -72,3 +72,25 @@ tfobj *parse_symbol(tfparser *parser) {
 
   return create_symbol_object(prim);
 }
+
+tfobj *parse_string(tfparser *parser) {
+  parser->p += 3;
+
+  char *start = parser->p;
+
+  while (parser->p[0] != '"' || parser->p[0] != '\0') {
+    parser->p++;
+  }
+
+  if (parser->p[0] == '\0') {
+    fprintf(stderr, "String delimiter (\") not found\n");
+    return NULL;
+  }
+
+  size_t len = parser->p - start;
+  char buf[len + 1];
+  memcpy(buf, start, len);
+  buf[len] = '\0';
+
+  return create_string_object(buf, len);
+}

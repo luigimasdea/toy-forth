@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../include/memory.h"
 
@@ -34,8 +35,10 @@ tfobj *create_bool_object(int val) {
 
 tfobj *create_string_object(char *str_ptr, size_t len) {
   tfobj *obj = create_object(TFOBJ_TYPE_STRING);
-  obj->str.str_ptr = str_ptr;
+
   obj->str.len = len;
+  obj->str.str_ptr = xmalloc((len + 1) * sizeof(char));
+  strcpy(obj->str.str_ptr, str_ptr);
 
   return obj;
 }

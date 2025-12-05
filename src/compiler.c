@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "../include/list.h"
 #include "../include/memory.h"
@@ -44,6 +45,9 @@ tfobj *compile(char *prg) {
     if (isdigit(parser.p[0]) || 
       (parser.p[0] == '-' && isdigit(parser.p[1]))) {
       obj = parse_int(&parser);
+    }
+    else if (strncmp(parser.p, "S\" ", 3) == 0) {
+      obj = parse_string(&parser);
     }
     else {
       obj = parse_symbol(&parser);
