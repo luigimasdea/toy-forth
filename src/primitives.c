@@ -26,6 +26,7 @@ int tfadd(tfobj *stack) {
 
   tfobj_release(a);
   tfobj_release(b);
+  tfobj_release(obj);
 
   return 0;
 }
@@ -51,6 +52,7 @@ int tfsub(tfobj *stack) {
 
   tfobj_release(a);
   tfobj_release(b);
+  tfobj_release(obj);
 
   return 0;
 }
@@ -76,6 +78,7 @@ int tfmul(tfobj *stack) {
 
   tfobj_release(a);
   tfobj_release(b);
+  tfobj_release(obj);
 
   return 0;
 }
@@ -101,6 +104,7 @@ int tfdiv(tfobj *stack) {
 
   tfobj_release(a);
   tfobj_release(b);
+  tfobj_release(obj);
 
   return 0;
 }
@@ -119,6 +123,7 @@ int tfprint(tfobj *stack) {
   return 0;
 }
 
+/* FIXME: Add support for other types */
 int tfdup(tfobj *stack) {
   if (stack->list.len < 1) {
     fprintf(stderr, "STACK UNDERFLOW: 'DUP' needs at least 1 elements\n");
@@ -127,14 +132,11 @@ int tfdup(tfobj *stack) {
   tfobj *obj = stack_peek(stack);
 
   if (obj->type != TFOBJ_TYPE_INT) {
-    stack_push(stack, obj);
     fprintf(stderr, "TYPE MISMATCH: 'DUP' only works with integers\n");
     return -1;
   }
 
-  tfobj *dup = create_int_object(obj->val);
-
-  stack_push(stack, dup);
+  stack_push(stack, obj);
 
   return 0;
 }
@@ -151,14 +153,18 @@ int tfmod(tfobj *stack) {
   if (a->type != TFOBJ_TYPE_INT || b->type != TFOBJ_TYPE_INT) {
     stack_push(stack, a);
     stack_push(stack, b);
+    tfobj_release(a);
+    tfobj_release(b);
     fprintf(stderr, "TYPE MISMATCH: 'MOD' works only with integers\n");
     return -1;
   }
+
   tfobj *obj = create_int_object(a->val % b->val);
   stack_push(stack, obj);
 
   tfobj_release(a);
   tfobj_release(b);
+  tfobj_release(obj);
 
   return 0;
 }

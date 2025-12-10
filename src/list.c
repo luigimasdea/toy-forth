@@ -23,6 +23,8 @@ void list_push_front(tfobj *list, tfobj *elem) {
   memmove(list->list.elem + 1, list->list.elem, list->list.len * sizeof(tfobj *));
   list->list.elem[0] = elem;
   list->list.len = new_len;
+
+  tfobj_retain(elem);
 }
 
 void list_push_back(tfobj *list, tfobj *elem) {
@@ -36,8 +38,11 @@ void list_push_back(tfobj *list, tfobj *elem) {
 
   list->list.elem[list->list.len] = elem;
   list->list.len = new_len;
+
+  tfobj_retain(elem);
 }
 
+/* FIXME: Manage list len exceptions */
 tfobj *list_pop_front(tfobj *list) {
   if (list == NULL || list->type != TFOBJ_TYPE_LIST) {
     fprintf(stderr, "Argoument is a non-list tfobject\n");
@@ -53,6 +58,7 @@ tfobj *list_pop_front(tfobj *list) {
   return e;
 }
 
+/* FIXME: Manage list len exceptions */
 tfobj *list_pop_back(tfobj *list) {
   if (list == NULL || list->type != TFOBJ_TYPE_LIST) {
     fprintf(stderr, "Argoument is a non-list tfobject\n");

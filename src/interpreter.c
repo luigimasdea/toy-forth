@@ -14,7 +14,7 @@ void interpreter(tfobj *stack) {
     printf("> ");
     if (fgets(buf, CHARS_READ_PER_LINE, stdin) == NULL) {
       printf("\nEOF signal (Ctrl+D) detected. Exiting program.\n");
-      exit(EXIT_SUCCESS); 
+      break;
     }
 
     if (strncmp(buf, "quit", 4) == 0

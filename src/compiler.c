@@ -60,6 +60,7 @@ tfobj *compile(char *prg) {
     }
 
     list_push_back(parsed_list, obj);
+    tfobj_release(obj);
   }
 
   return parsed_list;

@@ -30,9 +30,7 @@ void stack_push(tfobj *stack, tfobj *elem) {
 
 /*
  * The function pops and returns the element on top of the stack.
- * It release the element popped because we retained it when we pushed 
- * it onto the stack.
- * IMPORTANT: It's up to the caller to retain the object if it's acquired.
+ * IMPORTANT: It's up to the caller to release the object when it's acquired.
  */
 tfobj *stack_pop(tfobj *stack) {
   if (stack == NULL) {
@@ -53,12 +51,10 @@ tfobj *stack_pop(tfobj *stack) {
   
   tfobj *elem = stack->list.elem[new_len];
 
-  /* If 'new_len' == 0, xreallocarray becomes a free call (maybe there are portabilty issues) */
-  // FIXME
+  /* If 'new_len' == 0, xreallocarray becomes a free call */
   stack->list.elem = (tfobj **) xreallocarray(stack->list.elem, new_len, sizeof(tfobj *));
 
   stack->list.len = new_len;
-  // tfobj_release(elem);
 
   return elem;
 }
