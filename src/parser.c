@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "../include/symbol.h"
+#include "../include/memory.h"
 
 void skip_spaces(tfparser *parser) {
   while (isspace(parser->p[0])) {
@@ -74,11 +75,9 @@ tfobj *parse_symbol(tfparser *parser) {
 }
 
 tfobj *parse_string(tfparser *parser) {
-  parser->p += 3;
-
   char *start = parser->p;
 
-  while (parser->p[0] != '"' || parser->p[0] != '\0') {
+  while (parser->p[0] != '"' && parser->p[0] != '\0') {
     parser->p++;
   }
 
@@ -88,9 +87,12 @@ tfobj *parse_string(tfparser *parser) {
   }
 
   size_t len = parser->p - start;
-  char buf[len + 1];
+  char *buf = (char *) xmalloc((len + 1) * sizeof(char *));
+
   memcpy(buf, start, len);
   buf[len] = '\0';
+
+  parser->p++;  /* Skip the last " */
 
   return create_string_object(buf, len);
 }

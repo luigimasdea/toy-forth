@@ -47,6 +47,7 @@ tfobj *compile(char *prg) {
       obj = parse_int(&parser);
     }
     else if (strncmp(parser.p, "S\" ", 3) == 0) {
+      parser.p += 3;
       obj = parse_string(&parser);
     }
     else {

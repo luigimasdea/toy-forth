@@ -25,6 +25,7 @@ void stack_push(tfobj *stack, tfobj *elem) {
 
   stack->list.elem[stack->list.len] = elem;
   stack->list.len = new_len;
+  tfobj_retain(elem);
 }
 
 /*
@@ -57,6 +58,7 @@ tfobj *stack_pop(tfobj *stack) {
   stack->list.elem = (tfobj **) xreallocarray(stack->list.elem, new_len, sizeof(tfobj *));
 
   stack->list.len = new_len;
+  // tfobj_release(elem);
 
   return elem;
 }

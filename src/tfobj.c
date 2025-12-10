@@ -36,9 +36,8 @@ tfobj *create_bool_object(int val) {
 tfobj *create_string_object(char *str_ptr, size_t len) {
   tfobj *obj = create_object(TFOBJ_TYPE_STRING);
 
+  obj->str.str_ptr = str_ptr;
   obj->str.len = len;
-  obj->str.str_ptr = xmalloc((len + 1) * sizeof(char));
-  strcpy(obj->str.str_ptr, str_ptr);
 
   return obj;
 }
@@ -70,7 +69,7 @@ void tfobj_free(tfobj *obj) {
     case TFOBJ_TYPE_LIST:
     case TFOBJ_TYPE_STACK:
       for (size_t i = 0; i < obj->list.len; ++i) {
-        tfobj_free(obj->list.elem[i]);
+        tfobj_release(obj->list.elem[i]);
       }
       break;
 
@@ -80,9 +79,9 @@ void tfobj_free(tfobj *obj) {
 
     default:
       break;
-
-    free(obj);
   }
+
+  free(obj);
 }
 
 void tfobj_retain(tfobj *obj) {
@@ -120,6 +119,10 @@ void tfobj_print(tfobj *obj) {
       } else {
         printf("FALSE");
       }
+      break;
+
+    case TFOBJ_TYPE_STRING:
+      printf("%s\n", obj->str.str_ptr);
       break;
 
     default:
