@@ -7,12 +7,12 @@
 #include "include/compiler.h"
 
 int main(int argc, char **argv) {
-  tfobj *tfstack = create_stack_object();
-
   if (argc > 2) {
     fprintf(stderr, "Usage: main <file>");
     exit(EXIT_FAILURE);
   }
+
+  tfobj *tfstack = create_stack_object();
 
   if (argc == 2) {
     char *prg_text = read_file(argv[1]);

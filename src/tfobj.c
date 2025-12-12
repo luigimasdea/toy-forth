@@ -71,6 +71,8 @@ void tfobj_free(tfobj *obj) {
       for (size_t i = 0; i < obj->list.len; ++i) {
         tfobj_release(obj->list.elem[i]);
       }
+
+      free(obj->list.elem);
       break;
 
     case TFOBJ_TYPE_STRING:
