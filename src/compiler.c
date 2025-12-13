@@ -55,8 +55,8 @@ tfobj *compile(char *prg) {
     }
 
     if (obj == NULL) {
-      fprintf(stderr, "Syntax error at: %s\n", token_start);
-      return NULL;
+      fprintf(stderr, "UNDEFINED WORD: %s\n", token_start);
+      continue;
     }
 
     list_push_back(parsed_list, obj);
