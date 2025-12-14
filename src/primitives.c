@@ -131,18 +131,12 @@ int tfprint(tfobj *stack) {
   return 0;
 }
 
-/* FIXME: Add support for other types */
 int tfdup(tfobj *stack) {
   if (stack->list.len < 1) {
     fprintf(stderr, "STACK UNDERFLOW: 'DUP' needs at least 1 elements\n");
     return -1;
   }
   tfobj *obj = stack_peek(stack);
-
-  if (obj->type != TFOBJ_TYPE_INT) {
-    fprintf(stderr, "TYPE MISMATCH: 'DUP' only works with integers\n");
-    return -1;
-  }
 
   stack_push(stack, obj);
 
