@@ -66,8 +66,8 @@ tfobj *parse_symbol(tfparser *parser) {
   memcpy(token, start, len);
   token[len] = '\0';
 
-  tfprim prim = getprim(token);
-  if (prim == NULL) {
+  int prim = get_prim_num(token);
+  if (prim == -1) {
     return NULL;
   }
 

@@ -42,9 +42,10 @@ tfobj *create_string_object(char *str_ptr, size_t len) {
   return obj;
 }
 
-tfobj *create_symbol_object(tfprim prim) {
-  tfobj *obj = create_object(TFOBJ_TYPE_SYMBOL);
-  obj->prim_ptr = prim;
+tfobj *create_symbol_object(int prim) {
+  tfobj *obj = create_int_object(prim);
+
+  obj->type = TFOBJ_TYPE_SYMBOL;
 
   return obj;
 }
@@ -106,7 +107,7 @@ void tfobj_release(tfobj *obj) {
 
 void tfobj_print(tfobj *obj) {
   if (obj == NULL) {
-    printf("[NULL]");
+    printf("[NULL]\n");
     return;
   }
 
@@ -117,9 +118,9 @@ void tfobj_print(tfobj *obj) {
 
     case TFOBJ_TYPE_BOOL:
       if (obj->val == 0) {
-        printf("TRUE");
+        printf("FALSE\n");
       } else {
-        printf("FALSE");
+        printf("TRUE\n");
       }
       break;
 

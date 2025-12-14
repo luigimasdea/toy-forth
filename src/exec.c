@@ -2,6 +2,7 @@
 
 #include "../include/stack.h"
 #include "../include/list.h"
+#include "../include/primitives.h"
 
 
 void exec(tfobj *stack, tfobj *list) {
@@ -11,7 +12,7 @@ void exec(tfobj *stack, tfobj *list) {
 
     switch (el->type) {
       case TFOBJ_TYPE_SYMBOL:
-        el->prim_ptr(stack);
+        tfprim(stack, el->val);
         break;
 
       default:

@@ -1,38 +1,31 @@
 #include "../include/symbol.h"
 
 #include <ctype.h>
-#include <string.h>
 #include <stddef.h>
+#include <string.h>
 
-#define PRIM_COUNT 7
 
-const tfprim_dictionary_entry primitives[PRIM_COUNT] = {
-    {"+", tfadd},
-    {"-", tfsub},
-    {"*", tfmul},
-    {"/", tfdiv},
-    {".", tfprint},
-    {"DUP", tfdup},
-    {"MOD", tfmod},
+const char *prim_names[PRIM_COUNT] = {
+    "+", "-", "*", "/", ".", "DUP", "MOD", "<", ">", "==", "<=", ">=", "!="
 };
 
 char *strupr(char *str) {
   char *start = str;
 
   while (*str) {
-    *str = toupper((unsigned char) *str);
+    *str = toupper((unsigned char)*str);
     ++str;
   }
 
   return start;
 }
 
-tfprim getprim(char *str) {
+int get_prim_num(char *str) {
   for (int i = 0; i < PRIM_COUNT; ++i) {
-    if (strcmp(strupr(str), primitives[i].symbol) == 0) {
-      return primitives[i].prim_ptr;
+    if (strcmp(strupr(str), prim_names[i]) == 0) {
+      return i;
     }
   }
 
-  return NULL;
+  return -1;
 }

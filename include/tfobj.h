@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+#define TF_IS_NUMERIC(t) ((t) == TFOBJ_TYPE_INT || (t) == TFOBJ_TYPE_BOOL)
+
 enum TFOBJ_TYPE {
   TFOBJ_TYPE_INT = 0,
   TFOBJ_TYPE_BOOL = 1,
@@ -14,8 +16,6 @@ enum TFOBJ_TYPE {
 
 struct tfobj;
 typedef struct tfobj tfobj;
-
-typedef int (*tfprim)(tfobj *stack);
 
 struct tfobj {
   int ref_count;
@@ -32,8 +32,6 @@ struct tfobj {
       size_t len;
       struct tfobj **elem;
     } list;
-
-    tfprim prim_ptr;
   };
 };
 
@@ -42,7 +40,7 @@ tfobj *create_object(int type);
 tfobj *create_int_object(int val);
 tfobj *create_bool_object(int val);
 tfobj *create_string_object(char *str_ptr, size_t len);
-tfobj *create_symbol_object(tfprim prim);
+tfobj *create_symbol_object(int prim);
 tfobj *create_list_object(void);
 tfobj *create_stack_object(void);
 

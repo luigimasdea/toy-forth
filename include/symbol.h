@@ -2,14 +2,27 @@
 #define SYMBOL_H
 
 #include "tfobj.h"
-#include "primitives.h"
 
-typedef struct {
-    char *symbol; 
-    tfprim prim_ptr;
-} tfprim_dictionary_entry;
+enum Opcode {
+  TF_ADD = 0,
+  TF_SUB,
+  TF_MUL,
+  TF_DIV,
+  TF_PRINT,
+  TF_DUP,
+  TF_MOD,
+  TF_LT,
+  TF_GT,
+  TF_EQ,
+  TF_LE,
+  TF_GE,
+  TF_NE,
+  PRIM_COUNT,
+};
+
+extern const char *prim_names[];
 
 char *strupr(char *str);
-tfprim getprim(char *str);
+int get_prim_num(char *str);
 
 #endif // !SYMBOL_H
