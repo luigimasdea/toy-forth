@@ -88,9 +88,7 @@ void tfobj_free(tfobj *obj) {
 }
 
 void tfobj_retain(tfobj *obj) {
-  if (obj == NULL) {
-    return;
-  }
+  assert(obj != NULL);
 
   obj->ref_count++;
 }
@@ -130,7 +128,7 @@ void tfobj_print(tfobj *obj) {
 
     default:
       fprintf(stderr, "Print of other types is not yet implemented\n");
-      exit(EXIT_FAILURE);
+      exit(TF_ERR);
       break;
   }
 }

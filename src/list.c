@@ -10,11 +10,11 @@
 void list_push_front(tfobj *list, tfobj *elem) {
   if (list->type != TFOBJ_TYPE_LIST) {
     fprintf(stderr, "Argoument is a non-list tfobject\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
   if (list == NULL || elem == NULL) {
     fprintf(stderr, "One of all of the argouments are NULL\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
 
   size_t new_len = list->list.len + 1;
@@ -30,7 +30,7 @@ void list_push_front(tfobj *list, tfobj *elem) {
 void list_push_back(tfobj *list, tfobj *elem) {
   if (list == NULL || list->type != TFOBJ_TYPE_LIST) {
     fprintf(stderr, "Argoument is a non-list tfobject\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
 
   size_t new_len = list->list.len + 1;
@@ -46,7 +46,7 @@ void list_push_back(tfobj *list, tfobj *elem) {
 tfobj *list_pop_front(tfobj *list) {
   if (list == NULL || list->type != TFOBJ_TYPE_LIST) {
     fprintf(stderr, "Argoument is a non-list tfobject\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
 
   tfobj *e = list->list.elem[0];
@@ -62,7 +62,7 @@ tfobj *list_pop_front(tfobj *list) {
 tfobj *list_pop_back(tfobj *list) {
   if (list == NULL || list->type != TFOBJ_TYPE_LIST) {
     fprintf(stderr, "Argoument is a non-list tfobject\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
 
   tfobj *e = list->list.elem[list->list.len - 1];

@@ -20,14 +20,14 @@ int tfprim(tfobj *stack, int op) {
     break;
   }
 
-  return 0;
+  return TF_OK;
 }
 
 int tfalu(tfobj *stack, int op) {
   if (stack->list.len < 2) {
     fprintf(stderr, "STACK UNDERFLOW: '%s' needs at least 2 elements.\n",
             prim_names[op]);
-    return -1;
+    return TF_ERR;
   }
 
   tfobj *b = stack_pop(stack);
@@ -40,7 +40,7 @@ int tfalu(tfobj *stack, int op) {
     tfobj_release(b);
     fprintf(stderr, "TYPE MISMATCH: '%s' works only with integers.\n",
             prim_names[op]);
-    return -1;
+    return TF_ERR;
   }
 
   tfobj *obj;
@@ -58,26 +58,26 @@ int tfalu(tfobj *stack, int op) {
     break;
 
   case TF_DIV:
-    if (b->val == 0) {
+    if (b->val == TF_OK) {
       stack_push(stack, a);
       stack_push(stack, b);
       tfobj_release(a);
       tfobj_release(b);
-      fprintf(stderr, "TYPE MISMATCH: '/' works only divisor != 0.\n");
-      return -1;
+      fprintf(stderr, "TYPE MISMATCH: '/' works only divisor != TF_OK.\n");
+      return TF_ERR;
     }
 
     obj = create_int_object(a->val / b->val);
     break;
 
   case TF_MOD:
-    if (b->val == 0) {
+    if (b->val == TF_OK) {
       stack_push(stack, a);
       stack_push(stack, b);
       tfobj_release(a);
       tfobj_release(b);
-      fprintf(stderr, "TYPE MISMATCH: '%%' works only divisor != 0.\n");
-      return -1;
+      fprintf(stderr, "TYPE MISMATCH: '%%' works only divisor != TF_OK.\n");
+      return TF_ERR;
     }
 
     obj = create_int_object(a->val % b->val);
@@ -114,13 +114,13 @@ int tfalu(tfobj *stack, int op) {
   tfobj_release(b);
   tfobj_release(obj);
 
-  return 0;
+  return TF_OK;
 }
 
 int tfprint(tfobj *stack) {
   if (stack->list.len < 1) {
     fprintf(stderr, "STACK UNDERFLOW: '.' needs at least 1 elements\n");
-    return -1;
+    return TF_ERR;
   }
 
   tfobj *obj = stack_pop(stack);
@@ -128,17 +128,17 @@ int tfprint(tfobj *stack) {
   tfobj_print(obj);
   tfobj_release(obj);
 
-  return 0;
+  return TF_OK;
 }
 
 int tfdup(tfobj *stack) {
   if (stack->list.len < 1) {
     fprintf(stderr, "STACK UNDERFLOW: 'DUP' needs at least 1 elements\n");
-    return -1;
+    return TF_ERR;
   }
   tfobj *obj = stack_peek(stack);
 
   stack_push(stack, obj);
 
-  return 0;
+  return TF_OK;
 }

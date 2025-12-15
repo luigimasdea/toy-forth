@@ -9,7 +9,7 @@
 int main(int argc, char **argv) {
   if (argc > 2) {
     fprintf(stderr, "Usage: main <file>");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
 
   tfobj *tfstack = create_stack_object();

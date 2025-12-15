@@ -3,6 +3,9 @@
 
 #include <stdlib.h>
 
+#define TF_OK 0
+#define TF_ERR 1
+
 #define TF_IS_NUMERIC(t) ((t) == TFOBJ_TYPE_INT || (t) == TFOBJ_TYPE_BOOL)
 
 enum TFOBJ_TYPE {

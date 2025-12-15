@@ -12,11 +12,11 @@
 void stack_push(tfobj *stack, tfobj *elem) {
   if (stack == NULL || elem == NULL) {
     fprintf(stderr, "One of all of the argouments are NULL\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
   if (stack->type != TFOBJ_TYPE_STACK) {
     fprintf(stderr, "Pushed to a non-stack tfobject\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
 
   size_t new_len = stack->list.len + 1;
@@ -35,16 +35,16 @@ void stack_push(tfobj *stack, tfobj *elem) {
 tfobj *stack_pop(tfobj *stack) {
   if (stack == NULL) {
     fprintf(stderr, "Argoument 'stack' is NULL\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
   if (stack->type != TFOBJ_TYPE_STACK) {
     fprintf(stderr, "Popped from a non-stack tfobject\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
 
   if (stack->list.len <= 0) {
     fprintf(stderr, "Popped from an empty stack\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
 
   size_t new_len = stack->list.len - 1;
@@ -62,16 +62,16 @@ tfobj *stack_pop(tfobj *stack) {
 tfobj *stack_peek(tfobj *stack) {
   if (stack == NULL) {
     fprintf(stderr, "Argoument 'stack' is NULL\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
   if (stack->type != TFOBJ_TYPE_STACK) {
     fprintf(stderr, "Peeked from a non-stack tfobject\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
 
   if (stack->list.len <= 0) {
     fprintf(stderr, "Peeked from an empty stack\n");
-    exit(EXIT_FAILURE);
+    exit(TF_ERR);
   }
 
   return stack->list.elem[stack->list.len - 1];
