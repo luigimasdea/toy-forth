@@ -17,6 +17,9 @@ enum Opcode {
   TF_LE,
   TF_GE,
   TF_NE,
+  TF_JMPZ,
+  TF_JMP,
+  TF_THEN,
   PRIM_COUNT,
 };
 

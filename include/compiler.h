@@ -2,9 +2,9 @@
 #define COMPILER_H
 
 #include "tfobj.h"
-#include "parser.h"
 
 char *read_file(char *path);
+void backpatching(tfobj *list, int op_type);
 tfobj *compile(char *prg);
 
 #endif // !COMPILER_H

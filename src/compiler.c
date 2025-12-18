@@ -1,11 +1,19 @@
 #include "../include/compiler.h"
 
+#include <stddef.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 
+#include "../include/parser.h"
 #include "../include/list.h"
 #include "../include/memory.h"
+#include "../include/symbol.h"
+
+#define MAX_NESTING 64
+size_t ctrl_stack[MAX_NESTING];
+int ctrl_s_ptr = 0;
+
 
 char *read_file(char *path) {
   FILE *fp = fopen(path, "r");
@@ -23,6 +31,68 @@ char *read_file(char *path) {
   fclose(fp);
 
   return prg_text;
+}
+
+
+/*
+ * 0 1 2 3  4 5        6 7    8  9        10 11   12
+ *
+ * 1 2 < IF 9 S" True" . ELSE 12 S" False" . THEN ...
+ * 0    1  2 3        4 5    6  7         8 9    10
+ * TRUE IF 9 S" True" . ELSE 12 S" False" . THEN ...
+ *
+ *
+ * ctrl_stack
+ * idxs: 0 1 2 3 4 5 
+ * vals: 4 8
+ */
+void backpatching(tfobj *list, int op_type) {
+  switch(op_type) {
+    case TF_JMPZ: {
+      tfobj *hole = create_int_object(-1);
+      list_push_back(list, hole);
+      tfobj_release(hole);
+
+      if (ctrl_s_ptr >= MAX_NESTING) {
+        fprintf(stderr, "ERROR: Nesting too deep\n");
+        exit(TF_ERR);
+      }
+      ctrl_stack[ctrl_s_ptr++] = list->list.len - 1;
+      break;
+    }
+
+    case TF_JMP: {
+      if (ctrl_s_ptr == 0) {
+        fprintf(stderr, "ERROR: An ELSE instuction need at least an IF before\n");
+        exit(TF_ERR);
+      }
+      size_t idx = ctrl_stack[--ctrl_s_ptr];
+
+      tfobj *hole = create_int_object(-1);
+      list_push_back(list, hole);
+      tfobj_release(hole);
+
+      list->list.elem[idx]->val = list->list.len;
+      // list->list.elem[idx]->val = list->list.len + 1 - idx + 1;
+
+      ctrl_stack[ctrl_s_ptr++] = list->list.len - 1;
+
+      break;   
+    }
+
+    case TF_THEN: {
+      if (ctrl_s_ptr == 0) {
+        fprintf(stderr, "ERROR: A THEN instuction need at least an IF before\n");
+        exit(TF_ERR);
+      }
+      size_t idx = ctrl_stack[--ctrl_s_ptr];
+
+      list->list.elem[idx]->val = list->list.len;
+
+      break;
+    }
+
+  }
 }
 
 tfobj *compile(char *prg) {
@@ -60,6 +130,11 @@ tfobj *compile(char *prg) {
     }
 
     list_push_back(parsed_list, obj);
+
+    if (obj->type == TFOBJ_TYPE_SYMBOL) {
+      backpatching(parsed_list, obj->val);
+    }
+
     tfobj_release(obj);
   }
 

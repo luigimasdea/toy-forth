@@ -38,6 +38,13 @@ struct tfobj {
   };
 };
 
+typedef struct {
+    tfobj *stack;
+    tfobj **code;
+    size_t ip;
+    size_t len;
+} tf_vm;
+
 tfobj *create_object(int type);
 
 tfobj *create_int_object(int val);

@@ -1,22 +1,34 @@
 #include "../include/primitives.h"
 
+#include <stddef.h>
 #include <stdio.h>
 
 #include "../include/stack.h"
 #include "../include/symbol.h"
 
-int tfprim(tfobj *stack, int op) {
+int tf_exec_prim(tf_vm *vm, int op) {
   switch (op) {
   case TF_PRINT:
-    tfprint(stack);
+    tfprint(vm->stack);
     break;
 
   case TF_DUP:
-    tfdup(stack);
+    tfdup(vm->stack);
+    break;
+
+  case TF_JMPZ:
+    tfjmpz(vm);
+    break;
+
+  case TF_JMP:
+    tfjmp(vm);
+    break;
+
+  case TF_THEN:
     break;
 
   default:
-    tfalu(stack, op);
+    tfalu(vm->stack, op);
     break;
   }
 
@@ -139,6 +151,28 @@ int tfdup(tfobj *stack) {
   tfobj *obj = stack_peek(stack);
 
   stack_push(stack, obj);
+
+  return TF_OK;
+}
+
+int tfjmpz(tf_vm *vm) {
+  tfobj *cond = stack_pop(vm->stack);
+  int val = cond->val;
+  tfobj_release(cond);
+
+  if (val == 1) {
+    vm->ip++;  // Skip jmpz arg
+    return TF_OK;
+  }
+
+  return tfjmp(vm);
+}
+
+int tfjmp(tf_vm *vm) {
+  vm->ip++;
+  int jmp_arg = vm->code[vm->ip]->val;
+  vm->ip = jmp_arg;
+  vm->ip--;  // Decreased because it's gonna increment in the end of exec.
 
   return TF_OK;
 }
