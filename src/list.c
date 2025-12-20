@@ -42,10 +42,14 @@ void list_push_back(tfobj *list, tfobj *elem) {
   tfobj_retain(elem);
 }
 
-/* FIXME: Manage list len exceptions */
 tfobj *list_pop_front(tfobj *list) {
   if (list == NULL || list->type != TFOBJ_TYPE_LIST) {
     fprintf(stderr, "Argoument is a non-list tfobject\n");
+    exit(TF_ERR);
+  }
+
+  if (list->list.len <= 0) {
+    fprintf(stderr, "Popped from an empty list\n");
     exit(TF_ERR);
   }
 
@@ -58,10 +62,14 @@ tfobj *list_pop_front(tfobj *list) {
   return e;
 }
 
-/* FIXME: Manage list len exceptions */
 tfobj *list_pop_back(tfobj *list) {
   if (list == NULL || list->type != TFOBJ_TYPE_LIST) {
     fprintf(stderr, "Argoument is a non-list tfobject\n");
+    exit(TF_ERR);
+  }
+
+  if (list->list.len <= 0) {
+    fprintf(stderr, "Popped from an empty list\n");
     exit(TF_ERR);
   }
 
