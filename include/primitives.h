@@ -8,7 +8,11 @@ int tf_exec_prim(tf_vm *vm, int op);
 int tfalu(tfobj *stack, int op);
 int tfprint(tfobj *stack);
 int tfdup(tfobj *stack);
+int tfdrop(tfobj *stack);
 int tfjmpz(tf_vm *vm);
 int tfjmp(tf_vm *vm);
+int tfbegin(tf_vm *vm);
+int tfwhile(tf_vm *vm);
+int tfend(tf_vm *vm);
 
 #endif // !PRIMITIVES_H

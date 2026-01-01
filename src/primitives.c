@@ -155,6 +155,18 @@ int tfdup(tfobj *stack) {
   return TF_OK;
 }
 
+int tfdrop(tfobj *stack) {
+  if (stack->list.len < 1) {
+    fprintf(stderr, "STACK UNDERFLOW: 'DROP' needs at least 1 elements\n");
+    return TF_ERR;
+  }
+  tfobj *obj = stack_pop(stack);
+
+  tfobj_release(obj);
+
+  return TF_OK;
+}
+
 int tfjmpz(tf_vm *vm) {
   tfobj *cond = stack_pop(vm->stack);
   int val = cond->val;
@@ -176,3 +188,9 @@ int tfjmp(tf_vm *vm) {
 
   return TF_OK;
 }
+
+int tfbegin(tf_vm *vm);
+
+int tfwhile(tf_vm *vm);
+
+int tfend(tf_vm *vm);

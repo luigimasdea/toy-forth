@@ -2,7 +2,7 @@
 
 #include "../include/primitives.h"
 #include "../include/stack.h"
-#include "../include/symbol.h"
+
 #include <stddef.h>
 
 /*

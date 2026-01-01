@@ -33,19 +33,7 @@ char *read_file(char *path) {
   return prg_text;
 }
 
-
-/*
- * 0 1 2 3  4 5        6 7    8  9        10 11   12
- *
- * 1 2 < IF 9 S" True" . ELSE 12 S" False" . THEN ...
- * 0    1  2 3        4 5    6  7         8 9    10
- * TRUE IF 9 S" True" . ELSE 12 S" False" . THEN ...
- *
- *
- * ctrl_stack
- * idxs: 0 1 2 3 4 5 
- * vals: 4 8
- */
+// FIXME: Fix Edge cases
 void backpatching(tfobj *list, int op_type) {
   switch(op_type) {
     case TF_JMPZ: {
@@ -73,7 +61,6 @@ void backpatching(tfobj *list, int op_type) {
       tfobj_release(hole);
 
       list->list.elem[idx]->val = list->list.len;
-      // list->list.elem[idx]->val = list->list.len + 1 - idx + 1;
 
       ctrl_stack[ctrl_s_ptr++] = list->list.len - 1;
 

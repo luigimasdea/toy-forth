@@ -20,6 +20,10 @@ enum Opcode {
   TF_JMPZ,
   TF_JMP,
   TF_THEN,
+  TF_DROP,
+  TF_BEGIN,
+  TF_WHILE,
+  TF_REPEAT,
   PRIM_COUNT,
 };
 
