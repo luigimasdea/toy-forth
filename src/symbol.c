@@ -6,7 +6,7 @@
 
 
 const char *prim_names[PRIM_COUNT] = {
-    "+", "-", "*", "/", ".", "DUP", "MOD", "<", ">", "==", "<=", ">=", "!=", "IF", "ELSE", "THEN", "DROP", "BEGIN", "WHILE", "REPEAT"
+    "+", "-", "*", "/", ".", "DUP", "MOD", "<", ">", "==", "<=", ">=", "!=", "IF", "ELSE", "THEN", "DROP", "SWAP", "BEGIN", "WHILE", "REPEAT"
 };
 
 char *strupr(char *str) {

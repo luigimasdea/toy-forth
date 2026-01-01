@@ -16,6 +16,14 @@ int tf_exec_prim(tf_vm *vm, int op) {
     tfdup(vm->stack);
     break;
 
+  case TF_DROP:
+    tfdrop(vm->stack);
+    break;
+
+  case TF_SWAP:
+    tfswap(vm->stack);
+    break;
+
   case TF_JMPZ:
     tfjmpz(vm);
     break;
@@ -157,12 +165,30 @@ int tfdup(tfobj *stack) {
 
 int tfdrop(tfobj *stack) {
   if (stack->list.len < 1) {
-    fprintf(stderr, "STACK UNDERFLOW: 'DROP' needs at least 1 elements\n");
+    fprintf(stderr, "STACK UNDERFLOW: 'DROP' needs at least 1 element\n");
     return TF_ERR;
   }
   tfobj *obj = stack_pop(stack);
 
   tfobj_release(obj);
+
+  return TF_OK;
+}
+
+int tfswap(tfobj *stack) {
+  if (stack->list.len < 2) {
+    fprintf(stderr, "STACK UNDERFLOW: 'SWAP' needs at least 2 elements\n");
+    return TF_ERR;
+  }
+  
+  tfobj *first = stack_pop(stack);
+  tfobj *second = stack_pop(stack);
+
+  stack_push(stack, first);
+  stack_push(stack, second);
+
+  tfobj_release(first);
+  tfobj_release(second);
 
   return TF_OK;
 }

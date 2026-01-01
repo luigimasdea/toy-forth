@@ -21,6 +21,7 @@ enum Opcode {
   TF_JMP,
   TF_THEN,
   TF_DROP,
+  TF_SWAP,
   TF_BEGIN,
   TF_WHILE,
   TF_REPEAT,

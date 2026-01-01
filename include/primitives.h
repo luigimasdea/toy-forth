@@ -9,6 +9,7 @@ int tfalu(tfobj *stack, int op);
 int tfprint(tfobj *stack);
 int tfdup(tfobj *stack);
 int tfdrop(tfobj *stack);
+int tfswap(tfobj *stack);
 int tfjmpz(tf_vm *vm);
 int tfjmp(tf_vm *vm);
 int tfbegin(tf_vm *vm);
