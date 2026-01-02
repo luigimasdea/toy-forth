@@ -3,30 +3,37 @@
 
 #include "tfobj.h"
 
+#define X_PRIMITIVES \
+    X(TF_ADD,     "+") \
+    X(TF_SUB,     "-") \
+    X(TF_MUL,     "*") \
+    X(TF_DIV,     "/") \
+    X(TF_PRINT,   ".") \
+    X(TF_DUP,     "DUP") \
+    X(TF_MOD,     "MOD") \
+    X(TF_LT,      "<") \
+    X(TF_GT,      ">") \
+    X(TF_EQ,      "==") \
+    X(TF_LE,      "<=") \
+    X(TF_GE,      ">=") \
+    X(TF_NE,      "!=") \
+    X(TF_JMPZ,    "IF") \
+    X(TF_JMP,     "ELSE") \
+    X(TF_THEN,    "THEN") \
+    X(TF_DROP,    "DROP") \
+    X(TF_SWAP,    "SWAP") \
+    X(TF_BEGIN,   "BEGIN") \
+    X(TF_WHILE,   "WHILE") \
+    X(TF_REPEAT,  "REPEAT")
+
+#define X(opcode, name) opcode,
+
 enum Opcode {
-  TF_ADD = 0,
-  TF_SUB,
-  TF_MUL,
-  TF_DIV,
-  TF_PRINT,
-  TF_DUP,
-  TF_MOD,
-  TF_LT,
-  TF_GT,
-  TF_EQ,
-  TF_LE,
-  TF_GE,
-  TF_NE,
-  TF_JMPZ,
-  TF_JMP,
-  TF_THEN,
-  TF_DROP,
-  TF_SWAP,
-  TF_BEGIN,
-  TF_WHILE,
-  TF_REPEAT,
-  PRIM_COUNT,
+  X_PRIMITIVES
+  PRIM_COUNT 
 };
+
+#undef X
 
 extern const char *prim_names[];
 

@@ -1,13 +1,15 @@
 #include "../include/symbol.h"
 
 #include <ctype.h>
-#include <stddef.h>
 #include <string.h>
 
+#define X(opcode, name) name,
 
-const char *prim_names[PRIM_COUNT] = {
-    "+", "-", "*", "/", ".", "DUP", "MOD", "<", ">", "==", "<=", ">=", "!=", "IF", "ELSE", "THEN", "DROP", "SWAP", "BEGIN", "WHILE", "REPEAT"
+const char *prim_names[] = {
+  X_PRIMITIVES
 };
+
+#undef X
 
 char *strupr(char *str) {
   char *start = str;
