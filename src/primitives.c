@@ -32,8 +32,19 @@ int tf_exec_prim(tf_vm *vm, int op) {
     tfjmp(vm);
     break;
 
+  /* ===================== THIS WILL NEVER BE EXECUTED ====================== */
   case TF_THEN:
     break;
+
+  case TF_BEGIN:
+    break;
+
+  case TF_WHILE:
+    break;
+
+  case TF_REPEAT:
+    break;
+  /* ======================================================================== */
 
   default:
     tfalu(vm->stack, op);
