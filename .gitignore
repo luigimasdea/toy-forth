@@ -2,3 +2,4 @@ toyforth
 main.fs
 tests
 vgcore.*
+.aider*

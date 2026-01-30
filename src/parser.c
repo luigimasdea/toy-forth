@@ -8,8 +8,36 @@
 #include "../include/memory.h"
 
 void skip_spaces(tfparser *parser) {
-  while (isspace(parser->p[0])) {
-    parser->p++;
+  while (1) {
+    /* Skip whitespace */
+    while (isspace(parser->p[0])) {
+      parser->p++;
+    }
+
+    /* Handle backslash comment (skip to end of line) */
+    if (parser->p[0] == '\\') {
+      while (parser->p[0] != '\0' && parser->p[0] != '\n') {
+        parser->p++;
+      }
+      continue;
+    }
+
+    /* Handle parentheses comment (skip until matching ')') */
+    if (parser->p[0] == '(') {
+      int level = 1;
+      parser->p++;
+      while (parser->p[0] != '\0' && level > 0) {
+        if (parser->p[0] == ')') {
+          level--;
+        } else if (parser->p[0] == '(') {
+          level++;
+        }
+        parser->p++;
+      }
+      continue;
+    }
+
+    break;
   }
 }
 
