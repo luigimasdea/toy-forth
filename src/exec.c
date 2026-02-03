@@ -27,10 +27,11 @@ void exec(tfobj *stack, tfobj *instr_list) {
     return;
 
   tf_vm vm;
+  vm.stack = stack;
+  vm.r_stack = create_stack_object();
+  vm.code = instr_list->list.elem;
   vm.ip = 0;
   vm.len = instr_list->list.len;
-  vm.code = instr_list->list.elem;
-  vm.stack = stack;
 
   while (vm.ip < vm.len) {
     tfobj *el = vm.code[vm.ip];
@@ -46,4 +47,6 @@ void exec(tfobj *stack, tfobj *instr_list) {
 
     vm.ip++;
   }
+
+  tfobj_release(vm.r_stack);
 }

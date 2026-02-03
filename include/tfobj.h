@@ -40,6 +40,7 @@ struct tfobj {
 
 typedef struct {
     tfobj *stack;
+    tfobj *r_stack;
     tfobj **code;
     size_t ip;
     size_t len;
