@@ -24,7 +24,10 @@
     X(TF_SWAP,    "SWAP") \
     X(TF_BEGIN,   "BEGIN") \
     X(TF_WHILE,   "WHILE") \
-    X(TF_REPEAT,  "REPEAT")
+    X(TF_REPEAT,  "REPEAT") \
+    X(TF_TO_R,    ">R") \
+    X(TF_FROM_R,  "R>") \
+    X(TF_R_FETCH, "R@")
 
 #define X(opcode, name) opcode,
 

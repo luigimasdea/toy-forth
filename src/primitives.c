@@ -44,7 +44,20 @@ int tf_exec_prim(tf_vm *vm, int op) {
 
   case TF_REPEAT:
     break;
-  /* ======================================================================== */
+    /* ========================================================================
+     */
+
+  case TF_TO_R:
+    tf_to_r(vm);
+    break;
+
+  case TF_FROM_R:
+    tf_from_r(vm);
+    break;
+
+  case TF_R_FETCH:
+    tf_r_fetch(vm);
+    break;
 
   default:
     tfalu(vm->stack, op);
@@ -191,7 +204,7 @@ int tfswap(tfobj *stack) {
     fprintf(stderr, "STACK UNDERFLOW: 'SWAP' needs at least 2 elements\n");
     return TF_ERR;
   }
-  
+
   tfobj *first = stack_pop(stack);
   tfobj *second = stack_pop(stack);
 
@@ -210,7 +223,7 @@ int tfjmpz(tf_vm *vm) {
   tfobj_release(cond);
 
   if (val == 1) {
-    vm->ip++;  // Skip jmpz arg
+    vm->ip++; // Skip jmpz arg
     return TF_OK;
   }
 
@@ -221,7 +234,7 @@ int tfjmp(tf_vm *vm) {
   vm->ip++;
   int jmp_arg = vm->code[vm->ip]->val;
   vm->ip = jmp_arg;
-  vm->ip--;  // Decreased because it's gonna increment in the end of exec.
+  vm->ip--; // Decreased because it's gonna increment in the end of exec.
 
   return TF_OK;
 }
@@ -231,3 +244,53 @@ int tfbegin(tf_vm *vm);
 int tfwhile(tf_vm *vm);
 
 int tfend(tf_vm *vm);
+
+// >R ( a -- ) ( R: -- a )
+int tf_to_r(tf_vm *vm) {
+  if (vm->stack->list.len < 1) {
+    fprintf(stderr, "STACK UNDERFLOW: '>R' needs 1 element on data stack.\n");
+    return TF_ERR;
+  }
+  // Estraiamo dal data stack (pop non rilascia l'oggetto automaticamente)
+  tfobj *obj = stack_pop(vm->stack);
+
+  // Lo inseriamo nel return stack (push incrementa il ref_count)
+  stack_push(vm->r_stack, obj);
+
+  // Poiché stack_pop ci ha dato la proprietà di un riferimento
+  // e stack_push ne ha creato uno nuovo, dobbiamo rilasciare il nostro
+  tfobj_release(obj);
+  return TF_OK;
+}
+
+// R> ( -- a ) ( R: a -- )
+int tf_from_r(tf_vm *vm) {
+  if (vm->r_stack->list.len < 1) {
+    fprintf(stderr, "RETURN STACK UNDERFLOW: 'R>' needs 1 element.\n");
+    return TF_ERR;
+  }
+  // Estraiamo dal return stack
+  tfobj *obj = stack_pop(vm->r_stack);
+
+  // Inseriamo nel data stack
+  stack_push(vm->stack, obj);
+
+  // Rilasciamo il riferimento locale acquisito dal pop
+  tfobj_release(obj);
+  return TF_OK;
+}
+
+// R@ ( -- a ) ( R: a -- a )
+int tf_r_fetch(tf_vm *vm) {
+  if (vm->r_stack->list.len < 1) {
+    fprintf(stderr, "RETURN STACK UNDERFLOW: 'R@' needs 1 element.\n");
+    return TF_ERR;
+  }
+  // Guardiamo senza estrarre
+  tfobj *obj = stack_peek(vm->r_stack);
+
+  // Lo copiamo nel data stack (push incrementerà il ref_count)
+  stack_push(vm->stack, obj);
+
+  return TF_OK;
+}

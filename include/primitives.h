@@ -15,5 +15,8 @@ int tfjmp(tf_vm *vm);
 int tfbegin(tf_vm *vm);
 int tfwhile(tf_vm *vm);
 int tfend(tf_vm *vm);
+int tf_to_r(tf_vm *vm);
+int tf_from_r(tf_vm *vm);
+int tf_r_fetch(tf_vm *vm);
 
 #endif // !PRIMITIVES_H
