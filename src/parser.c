@@ -95,8 +95,11 @@ tfobj *parse_symbol(tfparser *parser) {
   token[len] = '\0';
 
   int prim = get_prim_num(token);
+
   if (prim == -1) {
-    return NULL;
+    char *name_copy = (char*)xmalloc(strlen(token) + 1);
+    strcpy(name_copy, token);
+    return create_user_object(name_copy);
   }
 
   return create_symbol_object(prim);

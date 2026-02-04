@@ -5,6 +5,6 @@
 
 char *read_file(char *path);
 void backpatching(tfobj *list, int op_type);
-tfobj *compile(char *prg);
+tfobj *compile(char *prg, tf_vm *vm);
 
 #endif // !COMPILER_H

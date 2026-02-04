@@ -2,51 +2,81 @@
 
 #include "../include/primitives.h"
 #include "../include/stack.h"
+#include "../include/dict.h"
 
+#include <stdio.h>
 #include <stddef.h>
 
-/*
- * This function take the stack context and the instruction list as argouments.
- * It utilizes an instruction pointer to access the instruction to execute.
- * This pointer need to be incremented by 1 in normal situations, but it has to
- * behave differently when it meets an IF statement. It must check the condition
- * and jump to the body of the if or, eventually, jump to the ELSE body.
- *
- * 1 < 2 IF S" True!" . THEN
- * 2 < 1 IF S" True!" . ELSE S" False" . THEN
- *
- * When we meet an IF, we call TF_JMPZ (conditional jump), becouse we need to
- * evaluate the condition and jump if false. Jump to the ELSE if present,
- * otherwise we jump to the THEN.
- *
- * Instead if we meet an ELSE, it means that the IF was true, so we need to
- * jump unconditionally (TF_JMP).
- */
-void exec(tfobj *stack, tfobj *instr_list) {
-  if (stack->type != TFOBJ_TYPE_STACK || instr_list->type != TFOBJ_TYPE_LIST)
-    return;
-
-  tf_vm vm;
-  vm.stack = stack;
-  vm.r_stack = create_stack_object();
-  vm.code = instr_list->list.elem;
-  vm.ip = 0;
-  vm.len = instr_list->list.len;
-
-  while (vm.ip < vm.len) {
-    tfobj *el = vm.code[vm.ip];
+static void exec_internal(tf_vm *vm) {
+  while (vm->ip < vm->len) {
+    tfobj *el = vm->code[vm->ip];
 
     switch (el->type) {
     case TFOBJ_TYPE_SYMBOL:
-      tf_exec_prim(&vm, el->val);
+      // Esegue primitive standard (+, -, DUP...)
+      tf_exec_prim(vm, el->val);
       break;
-    default:
-      stack_push(vm.stack, el);
+
+    case TFOBJ_TYPE_USER: {
+      // 1. Cerca la parola nel dizionario
+      // Nota: el->str.str_ptr contiene il nome della parola (es. "SQUARE")
+      tfobj *body = dict_lookup(vm, el->str.str_ptr);
+      
+      if (body == NULL) {
+          fprintf(stderr, "ERROR: Unknown word '%s'\n", el->str.str_ptr);
+          return; // O exit(TF_ERR)
+      }
+
+      // 2. PREPARAZIONE RICORSIONE (Salvataggio Contesto)
+      // Creiamo una COPIA della VM sullo stack C.
+      // Perché? Perché vm->stack, vm->r_stack e vm->dict sono PUNTATORI,
+      // quindi la copia punterà agli stessi oggetti (condivisi).
+      // MA vm->ip, vm->code e vm->len saranno locali a questa chiamata.
+      tf_vm sub_vm = *vm; 
+
+      // 3. Impostiamo il nuovo codice da eseguire
+      sub_vm.ip = 0;
+      sub_vm.code = body->list.elem;
+      sub_vm.len = body->list.len;
+
+      // 4. Chiamata Ricorsiva!
+      // Eseguiamo il corpo della parola definita dall'utente.
+      exec_internal(&sub_vm);
+      
+      // Quando exec_internal ritorna, 'sub_vm' viene distrutta.
+      // Noi torniamo al 'vm' originale che ha ancora il suo 'ip' corretto.
       break;
     }
 
-    vm.ip++;
-  }
+    default:
+      // Numeri, Stringhe -> Push sullo stack
+      stack_push(vm->stack, el);
+      break;
+    }
 
-  tfobj_release(vm.r_stack);
+    vm->ip++;
+  }
+}
+
+void exec(tf_vm *vm, tfobj *list) {
+  if (vm == NULL || list == NULL || list->type != TFOBJ_TYPE_LIST) return;
+
+  // Salviamo lo stato precedente della VM (nel caso exec venga chiamata dall'interprete
+  // mentre la VM stava facendo altro, anche se raro in questo design)
+  tfobj **prev_code = vm->code;
+  size_t prev_len = vm->len;
+  size_t prev_ip = vm->ip;
+
+  // Impostiamo il nuovo codice
+  vm->code = list->list.elem;
+  vm->len = list->list.len;
+  vm->ip = 0;
+
+  // Avviamo il motore
+  exec_internal(vm);
+
+  // Ripristino (opzionale, ma buona pratica per pulizia)
+  vm->code = prev_code;
+  vm->len = prev_len;
+  vm->ip = prev_ip;
 }

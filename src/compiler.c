@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../include/dict.h"
 #include "../include/list.h"
 #include "../include/memory.h"
 #include "../include/parser.h"
@@ -14,6 +15,29 @@
 #define MAX_NESTING 64
 size_t ctrl_stack[MAX_NESTING];
 int ctrl_s_ptr = 0;
+
+static tfobj *get_next_token(tfparser *parser) {
+  skip_spaces(parser);
+
+  if (parser->p[0] == '\0')
+    return NULL;
+
+  // 1. Numeri
+  if (isdigit(parser->p[0]) || (parser->p[0] == '-' && isdigit(parser->p[1]))) {
+    return parse_int(parser);
+  }
+
+  // 2. Stringhe
+  else if (strncmp(parser->p, "S\" ", 3) == 0) {
+    parser->p += 3;
+    return parse_string(parser);
+  }
+
+  // 3. Simboli (Primitive o User Words)
+  else {
+    return parse_symbol(parser);
+  }
+}
 
 char *read_file(char *path) {
   FILE *fp = fopen(path, "r");
@@ -193,7 +217,7 @@ void backpatching(tfobj *list, int op_type) {
   }
 }
 
-tfobj *compile(char *prg) {
+tfobj *compile(char *prg, tf_vm *vm) {
   tfparser parser;
   parser.prg = prg;
   parser.p = prg;
@@ -209,15 +233,50 @@ tfobj *compile(char *prg) {
       break; /* EOF */
     }
 
-    /* Parsing different types */
-    if (isdigit(parser.p[0]) || (parser.p[0] == '-' && isdigit(parser.p[1]))) {
-      obj = parse_int(&parser);
-    } else if (strncmp(parser.p, "S\" ", 3) == 0) {
-      parser.p += 3;
-      obj = parse_string(&parser);
-    } else {
-      obj = parse_symbol(&parser);
+    if (strncmp(parser.p, ": ", 2) == 0) {
+      parser.p += 2;
+      skip_spaces(&parser);
+
+      tfobj *name_obj = parse_symbol(&parser);
+
+      char *word_name = strdup(name_obj->str.str_ptr);
+      tfobj_release(name_obj);
+
+      // 2. Compila il corpo della funzione in una NUOVA lista a parte
+      tfobj *body_list = create_list_object();
+
+      while (1) {
+        skip_spaces(&parser);
+
+        if (parser.p[0] == ';') {
+          parser.p++;
+          break;
+        }
+
+        if (parser.p[0] == '\0') {
+          fprintf(stderr, "ERROR: Missing ';' in definition of %s\n",
+                  word_name);
+          break;
+        }
+
+        tfobj *body_item = get_next_token(&parser);
+
+        if (body_item) {
+          list_push_back(body_list, body_item);
+
+          if (body_item->type == TFOBJ_TYPE_SYMBOL) {
+            backpatching(body_list, body_item->val);
+          }
+
+          tfobj_release(body_item);
+        }
+      }
+
+      dict_add(vm, word_name, body_list);
+      continue;
     }
+
+    obj = get_next_token(&parser);
 
     if (obj == NULL) {
       fprintf(stderr, "UNDEFINED WORD: %s\n", token_start);

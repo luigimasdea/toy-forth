@@ -15,6 +15,7 @@ enum TFOBJ_TYPE {
   TFOBJ_TYPE_SYMBOL = 3,
   TFOBJ_TYPE_LIST = 4,
   TFOBJ_TYPE_STACK = 5,
+  TFOBJ_TYPE_USER = 6,
 };
 
 struct tfobj;
@@ -22,7 +23,7 @@ typedef struct tfobj tfobj;
 
 struct tfobj {
   int ref_count;
-  int type;  // TFOBJ_TYPE_*
+  int type; // TFOBJ_TYPE_*
   union {
     int val;
 
@@ -38,12 +39,19 @@ struct tfobj {
   };
 };
 
-typedef struct {
-    tfobj *stack;
-    tfobj *r_stack;
-    tfobj **code;
-    size_t ip;
-    size_t len;
+typedef struct tf_dict_node {
+  char *name;
+  tfobj *code_list;
+  struct tf_dict_node *next;
+} tf_dict_node;
+
+typedef struct tf_vm {
+  tfobj *stack;
+  tfobj *r_stack;
+  tfobj **code;
+  size_t ip;
+  size_t len;
+  tf_dict_node *dict;
 } tf_vm;
 
 tfobj *create_object(int type);
@@ -54,6 +62,7 @@ tfobj *create_string_object(char *str_ptr, size_t len);
 tfobj *create_symbol_object(int prim);
 tfobj *create_list_object(void);
 tfobj *create_stack_object(void);
+tfobj* create_user_object(char *name);
 
 void tfobj_free(tfobj *obj);
 void tfobj_retain(tfobj *obj);

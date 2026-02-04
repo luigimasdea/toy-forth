@@ -5,6 +5,6 @@
 
 #define CHARS_READ_PER_LINE 129  // 129 bytes + 1 to store '\0'
 
-void interpreter(tfobj *stack);
+void interpreter(tf_vm *vm);
 
 #endif // !INTERPRETER_H

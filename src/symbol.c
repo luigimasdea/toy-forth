@@ -23,8 +23,9 @@ char *strupr(char *str) {
 }
 
 int get_prim_num(char *str) {
+  str = strupr(str);
   for (int i = 0; i < PRIM_COUNT; ++i) {
-    if (strcmp(strupr(str), prim_names[i]) == 0) {
+    if (strcmp(str, prim_names[i]) == 0) {
       return i;
     }
   }

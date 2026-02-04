@@ -3,6 +3,6 @@
 
 #include "tfobj.h"
 
-void exec(tfobj *stack, tfobj *list);
+void exec(tf_vm *vm, tfobj *list);
 
 #endif // !EXEC_H

@@ -65,6 +65,13 @@ tfobj *create_stack_object(void) {
   return obj;
 }
 
+tfobj* create_user_object(char *name) {
+  tfobj *obj = create_object(TFOBJ_TYPE_USER);
+  obj->str.str_ptr = name;
+
+  return obj;
+}
+
 void tfobj_free(tfobj *obj) {
   switch (obj->type) {
     case TFOBJ_TYPE_LIST:

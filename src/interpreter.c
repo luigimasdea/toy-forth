@@ -6,7 +6,7 @@
 #include "../include/compiler.h"
 #include "../include/exec.h"
 
-void interpreter(tfobj *stack) {
+void interpreter(tf_vm *vm) {
   char buf[CHARS_READ_PER_LINE];
   tfobj *tokens_list;
 
@@ -22,9 +22,11 @@ void interpreter(tfobj *stack) {
       break;
     }
 
-    tokens_list = compile(buf);
-    if (tokens_list == NULL) break;
-    exec(stack, tokens_list);
+    tokens_list = compile(buf, vm);
+
+    if (tokens_list == NULL) continue;
+
+    exec(vm, tokens_list);
 
     tfobj_release(tokens_list);
   }
