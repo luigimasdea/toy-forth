@@ -88,7 +88,7 @@ void backpatching(tfobj *list, int op_type) {
     tfobj_release(temp_obj);
 
     if (ctrl_s_ptr >= MAX_NESTING) {
-      fprintf(stderr, "ERROR: Too many nestings\n");
+      fprintf(stderr, "ERROR: Nesting too deep at BEGIN\n");
       exit(TF_ERR);
     }
 
@@ -106,9 +106,14 @@ void backpatching(tfobj *list, int op_type) {
 
     tfobj *hole = create_int_object(-1);
     list_push_back(list, hole);
+    tfobj_release(hole);
+
+    if (ctrl_s_ptr >= MAX_NESTING) {
+      fprintf(stderr, "ERROR: Nesting too deep at WHILE\n");
+      exit(TF_ERR);
+    }
 
     ctrl_stack[ctrl_s_ptr++] = list->list.len - 1;
-    tfobj_release(hole);
     break;
   }
 
@@ -129,12 +134,60 @@ void backpatching(tfobj *list, int op_type) {
     list_push_back(list, op);
     tfobj_release(op);
 
-    tfobj *target = create_int_object(begin_addr);
+    tfobj *target = create_int_object((int)begin_addr);
     list_push_back(list, target);
     tfobj_release(target);
 
-    list->list.elem[while_hole_idx]->val = list->list.len;
+    list->list.elem[while_hole_idx]->val = (int)list->list.len;
 
+    break;
+  }
+
+  case TF_DO: {
+    // DO compila codice! Deve spostare argomenti su R-Stack.
+    // Ma a differenza di BEGIN, qui emettiamo un'istruzione reale.
+    // Poiché "DO" è una primitiva runtime, la lasciamo nella lista (o la
+    // sostituiamo con un opcode dedicato).
+
+    // Se nel tuo parser DO è mappato a un Opcode TF_DO che esegue la logica
+    // runtime, allora qui dobbiamo solo gestire il salto (il target per il
+    // LOOP).
+
+    // NOTA: In molti Forth, DO è "immediato" e compila codice complesso.
+    // Per semplicità nel ToyForth: Trattiamo DO come marcatore di inizio loop.
+
+    // 1. NON rimuovere TF_DO dalla lista istruzioni, serve a runtime!
+    // (Oppure assicurati che list_push_back l'abbia messo prima di chiamare
+    // backpatching)
+
+    // 2. Salva l'indirizzo dell'istruzione DOPO il DO (qui inizia il loop)
+    ctrl_stack[ctrl_s_ptr++] = list->list.len;
+    break;
+  }
+
+  case TF_LOOP: {
+    // 1. Rimuovi il simbolo "LOOP" (lo sostituiamo con logica di salto)
+    tfobj *temp = list_pop_back(list);
+    tfobj_release(temp);
+
+    if (ctrl_s_ptr == 0) {
+      fprintf(stderr, "ERROR: LOOP without DO\n");
+      exit(TF_ERR);
+    }
+
+    // 2. Recupera l'indirizzo dopo il DO
+    size_t do_addr = ctrl_stack[--ctrl_s_ptr];
+
+    // 3. Emetti istruzione TF_LOOP (Runtime)
+    // Questa istruzione farà: (R: limit index -- ) increment index, check limit
+    tfobj *op = create_symbol_object(TF_LOOP);
+    list_push_back(list, op);
+    tfobj_release(op);
+
+    // 4. Emetti l'indirizzo di salto (dove tornare se il loop continua)
+    tfobj *target = create_int_object((int)do_addr);
+    list_push_back(list, target);
+    tfobj_release(target);
     break;
   }
   }

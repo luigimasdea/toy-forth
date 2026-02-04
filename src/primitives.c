@@ -24,6 +24,10 @@ int tf_exec_prim(tf_vm *vm, int op) {
     tfswap(vm->stack);
     break;
 
+  case TF_OVER:
+    tfover(vm->stack);
+    break;
+
   case TF_JMPZ:
     tfjmpz(vm);
     break;
@@ -57,6 +61,18 @@ int tf_exec_prim(tf_vm *vm, int op) {
 
   case TF_R_FETCH:
     tf_r_fetch(vm);
+    break;
+
+  case TF_DO:
+    tf_do(vm);
+    break;
+
+  case TF_LOOP:
+    tf_loop(vm);
+    break;
+
+  case TF_I:
+    tf_i(vm);
     break;
 
   default:
@@ -217,6 +233,17 @@ int tfswap(tfobj *stack) {
   return TF_OK;
 }
 
+int tfover(tfobj *stack) {
+  if (stack->list.len < 2) {
+    fprintf(stderr, "STACK UNDERFLOW: 'OVER' needs 2 elements\n");
+    return TF_ERR;
+  }
+  tfobj *obj = stack->list.elem[stack->list.len - 2];
+
+  stack_push(stack, obj);
+  return TF_OK;
+}
+
 int tfjmpz(tf_vm *vm) {
   tfobj *cond = stack_pop(vm->stack);
   int val = cond->val;
@@ -239,58 +266,95 @@ int tfjmp(tf_vm *vm) {
   return TF_OK;
 }
 
-int tfbegin(tf_vm *vm);
-
-int tfwhile(tf_vm *vm);
-
-int tfend(tf_vm *vm);
-
-// >R ( a -- ) ( R: -- a )
 int tf_to_r(tf_vm *vm) {
   if (vm->stack->list.len < 1) {
     fprintf(stderr, "STACK UNDERFLOW: '>R' needs 1 element on data stack.\n");
     return TF_ERR;
   }
-  // Estraiamo dal data stack (pop non rilascia l'oggetto automaticamente)
   tfobj *obj = stack_pop(vm->stack);
 
-  // Lo inseriamo nel return stack (push incrementa il ref_count)
   stack_push(vm->r_stack, obj);
 
-  // Poiché stack_pop ci ha dato la proprietà di un riferimento
-  // e stack_push ne ha creato uno nuovo, dobbiamo rilasciare il nostro
   tfobj_release(obj);
   return TF_OK;
 }
 
-// R> ( -- a ) ( R: a -- )
 int tf_from_r(tf_vm *vm) {
   if (vm->r_stack->list.len < 1) {
     fprintf(stderr, "RETURN STACK UNDERFLOW: 'R>' needs 1 element.\n");
     return TF_ERR;
   }
-  // Estraiamo dal return stack
   tfobj *obj = stack_pop(vm->r_stack);
 
-  // Inseriamo nel data stack
   stack_push(vm->stack, obj);
 
-  // Rilasciamo il riferimento locale acquisito dal pop
   tfobj_release(obj);
   return TF_OK;
 }
 
-// R@ ( -- a ) ( R: a -- a )
 int tf_r_fetch(tf_vm *vm) {
   if (vm->r_stack->list.len < 1) {
     fprintf(stderr, "RETURN STACK UNDERFLOW: 'R@' needs 1 element.\n");
     return TF_ERR;
   }
-  // Guardiamo senza estrarre
   tfobj *obj = stack_peek(vm->r_stack);
 
-  // Lo copiamo nel data stack (push incrementerà il ref_count)
   stack_push(vm->stack, obj);
 
   return TF_OK;
+}
+
+int tf_do(tf_vm *vm) {
+  // Sposta limit e start sul Return Stack
+  if (vm->stack->list.len < 2)
+    return TF_ERR;
+
+  tfobj *start = stack_pop(vm->stack);
+  tfobj *limit = stack_pop(vm->stack);
+
+  // Ordine su R-Stack: Limit (sotto), Start (sopra/top)
+  stack_push(vm->r_stack, limit);
+  stack_push(vm->r_stack, start);
+
+  tfobj_release(start);
+  tfobj_release(limit);
+  return TF_OK;
+}
+
+int tf_loop(tf_vm *vm) {
+  // 1. Recupera Indice e Limite dal R-Stack (senza rimuoverli per ora)
+  // R-Stack Top: Index
+  // R-Stack Top-1: Limit
+  size_t len = vm->r_stack->list.len;
+  if (len < 2)
+    return TF_ERR;
+
+  tfobj *index_obj = vm->r_stack->list.elem[len - 1];
+  tfobj *limit_obj = vm->r_stack->list.elem[len - 2];
+
+  // 2. Incrementa Indice
+  index_obj->val += 1;
+
+  // 3. Controlla condizione: Index < Limit ?
+  if (index_obj->val < limit_obj->val) {
+    // CONTINUA IL LOOP: Salta indietro
+    // Leggiamo l'indirizzo target (che è l'argomento dopo OP_LOOP)
+    int target = vm->code[vm->ip + 1]->val;
+    vm->ip = target;
+    vm->ip--; // Compensazione per l'incremento del ciclo exec
+  } else {
+    // FINE LOOP: Pulisci R-Stack e vai avanti
+    // Rimuovi Index e Limit
+    tfobj *i = stack_pop(vm->r_stack);
+    tfobj_release(i);
+    tfobj *l = stack_pop(vm->r_stack);
+    tfobj_release(l);
+
+    vm->ip++; // Salta l'argomento (indirizzo) del LOOP
+  }
+  return TF_OK;
+}
+
+int tf_i(tf_vm *vm) {
+  return tf_r_fetch(vm); // R@ e I sono la stessa cosa!
 }

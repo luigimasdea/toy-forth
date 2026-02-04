@@ -1,5 +1,5 @@
 toyforth
-main.fs
+main.tf
 tests
 vgcore.*
 .aider*

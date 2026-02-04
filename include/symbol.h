@@ -22,12 +22,16 @@
     X(TF_THEN,    "THEN") \
     X(TF_DROP,    "DROP") \
     X(TF_SWAP,    "SWAP") \
+    X(TF_OVER, "OVER") \
     X(TF_BEGIN,   "BEGIN") \
     X(TF_WHILE,   "WHILE") \
     X(TF_REPEAT,  "REPEAT") \
     X(TF_TO_R,    ">R") \
     X(TF_FROM_R,  "R>") \
-    X(TF_R_FETCH, "R@")
+    X(TF_R_FETCH, "R@") \
+    X(TF_DO,      "DO") \
+    X(TF_LOOP,    "LOOP") \
+    X(TF_I,       "I")
 
 #define X(opcode, name) opcode,
 
