@@ -5,6 +5,7 @@
 #include "include/tfobj.h"
 #include "include/interpreter.h"
 #include "include/compiler.h"
+#include "include/dict.h"
 
 int main(int argc, char **argv) {
   if (argc > 2) {
@@ -37,7 +38,7 @@ int main(int argc, char **argv) {
   tfobj_release(data_stack);
   tfobj_release(ret_stack);
 
-  // TODO: Free dictionary
+  dict_free(&vm);
 
   return 0;
 }

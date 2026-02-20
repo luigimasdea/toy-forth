@@ -84,6 +84,7 @@ void tfobj_free(tfobj *obj) {
       break;
 
     case TFOBJ_TYPE_STRING:
+    case TFOBJ_TYPE_USER:
       free(obj->str.str_ptr);
       break;
 

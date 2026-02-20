@@ -273,6 +273,8 @@ tfobj *compile(char *prg, tf_vm *vm) {
       }
 
       dict_add(vm, word_name, body_list);
+      free(word_name);
+      tfobj_release(body_list);
       continue;
     }
 
